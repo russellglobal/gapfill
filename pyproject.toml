@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "aidev"
+version = "0.1.0"
+description = "AI 开发者的通用工具箱"
+requires-python = ">=3.8"
+authors = [{ name = "aidev contributors" }]
+license = { text = "MIT" }
+
+[project.scripts]
+aidev = "aidev.__main__:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
