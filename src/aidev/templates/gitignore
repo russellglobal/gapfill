@@ -1,0 +1,32 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+venv/
+.env
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Java
+target/
+*.class
+
+# 通用
+*.log
+*.tmp
