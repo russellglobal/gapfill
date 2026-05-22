@@ -23,19 +23,9 @@ def init_command(args):
     platform_name = args.platform
     is_public = args.public
 
-    # 1. 环境检查
+    # 1. 环境检查 + 缺失组件安装
     print("检查环境...")
-    if not detect_git():
-        print("未检测到 git，请先安装 git")
-        sys.exit(1)
-
-    ssh_key = detect_ssh_key()
-    if not ssh_key:
-        print("未检测到 SSH key")
-        print("请运行: ssh-keygen -t ed25519 -C \"your_email@example.com\"")
-        print("然后将公钥添加到 Git 平台")
-        sys.exit(1)
-    print(f"  SSH key: {ssh_key}")
+    _check_and_install(platform_name)
 
     # 2. 本地目录处理
     if not project_path.exists():
@@ -64,34 +54,74 @@ def init_command(args):
 
     print(f"\n本地初始化完成: {project_path}")
 
-    # 5. 远程仓库创建
-    print("创建远程仓库...")
-    from gapfill.utils import (
-        detect_gh_cli, detect_git_username,
-        create_github_repo, create_repo_via_api,
-        bind_remote_and_push,
-    )
+    # 5. 远程仓库创建 + 推送
+    _create_remote_repo(project_path, platform_name, is_public)
 
-    if detect_gh_cli() and platform_name == "github":
-        result = create_github_repo(project_path.name, is_public)
-        if result.returncode == 0:
-            print(f"  远程仓库已创建")
+
+def _check_and_install(platform_name):
+    """环境检查 + 缺失组件安装提示"""
+    from gapfill.utils import detect_git, detect_ssh_key, detect_gh_cli
+
+    # git 是必须的
+    if not detect_git():
+        print("未检测到 git，请先安装 git")
+        sys.exit(1)
+    print("  git: 已安装")
+
+    # SSH key 是必须的（用于认证）
+    ssh_key = detect_ssh_key()
+    if not ssh_key:
+        print("  未检测到 SSH key")
+        print("  正在自动创建 SSH key (ed25519)...")
+        _generate_ssh_key()
+        ssh_key = detect_ssh_key()
+        if ssh_key:
+            print(f"  SSH key 已创建: {ssh_key}")
+            _print_ssh_setup_guide()
         else:
-            print(f"  仓库创建可能已存在，尝试推送...")
-            username = detect_git_username(platform_name) or "unknown"
-            push_result = bind_remote_and_push(project_path, platform_name, username, project_path.name)
-            if push_result.returncode == 0:
-                print(f"  推送成功")
-            else:
-                print(f"  推送失败: {push_result.stderr}")
-                print(f"  请手动执行: cd {project_path} && git remote add origin <url> && git push -u origin main")
+            print("  SSH key 创建失败，请手动运行: ssh-keygen -t ed25519")
+            sys.exit(1)
     else:
-        print(f"  未检测到 gh CLI 或平台不是 GitHub")
-        print(f"  提示: 安装 gh CLI (https://cli.github.com) 可自动创建仓库")
-        print(f"  或手动创建仓库后执行:")
-        print(f"    cd {project_path}")
-        print(f"    git remote add origin <remote-url>")
-        print(f"    git push -u origin main")
+        print(f"  SSH key: {ssh_key}")
+
+    # gh CLI 非必须，但影响远程仓库创建
+    if platform_name == "github":
+        if detect_gh_cli():
+            print("  gh CLI: 已安装")
+        else:
+            print("  gh CLI: 未安装（可选，用于自动创建远程仓库）")
+            print("  建议安装。安装命令（任选其一）：")
+            print("    Windows: winget install --id GitHub.cli")
+            print("    Mac:     brew install gh")
+            print("    Linux:   sudo snap install gh")
+            print("  安装后运行: gh auth login")
+            print("  跳过此步不影响本地初始化。")
+
+
+def _generate_ssh_key():
+    """自动生成 SSH key"""
+    import subprocess
+    result = subprocess.run(
+        ["ssh-keygen", "-t", "ed25519", "-C", "gapfill-generated-key",
+         "-f", str(Path.home() / ".ssh" / "id_ed25519"), "-N", "", "-q"],
+        capture_output=True, text=True, timeout=30
+    )
+    return result.returncode == 0
+
+
+def _print_ssh_setup_guide():
+    """打印 SSH key 配置指南"""
+    pub_key_path = Path.home() / ".ssh" / "id_ed25519.pub"
+    try:
+        pub_key = pub_key_path.read_text().strip()
+    except Exception:
+        pub_key = "（请读取 ~/.ssh/id_ed25519.pub 内容）"
+
+    print("\n  ⚠️  首次使用需要将公钥添加到 Git 平台：")
+    print("    GitHub:  https://github.com/settings/ssh/new")
+    print("    Gitee:   https://gitee.com/profile/ssh_keys")
+    print("    GitLab:  https://gitlab.com/-/profile/keys")
+    print(f"  公钥: {pub_key}\n")
 
 
 def _read_template(filename):
@@ -145,3 +175,32 @@ def _create_env_info(project_path):
         .replace("{{tools_info}}", tools_text)
     )
     _write_file(project_path / "env-info.txt", content)
+
+
+def _create_remote_repo(project_path, platform_name, is_public):
+    """创建远程仓库并推送"""
+    if platform_name != "github":
+        print(f"  平台 {platform_name} 暂不支持自动创建")
+        return
+
+    from gapfill.utils import (
+        detect_gh_cli, detect_git_username,
+        create_github_repo, bind_remote_and_push,
+    )
+
+    if not detect_gh_cli():
+        print("  gh CLI 未安装，无法创建远程仓库")
+        return
+
+    print("创建远程仓库...")
+    result = create_github_repo(project_path.name, is_public)
+    if result.returncode == 0:
+        print(f"  远程仓库已创建")
+    else:
+        print(f"  仓库可能已存在，尝试推送...")
+        username = detect_git_username(platform_name) or "unknown"
+        push_result = bind_remote_and_push(project_path, platform_name, username, project_path.name)
+        if push_result.returncode == 0:
+            print(f"  推送成功")
+        else:
+            print(f"  推送失败: {push_result.stderr}")
