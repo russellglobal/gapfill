@@ -59,7 +59,7 @@ Claude 会调用 gapfill skill 执行初始化。
 
 ## 许可证
 
-MIT
+Apache 2.0
 
 ---
 

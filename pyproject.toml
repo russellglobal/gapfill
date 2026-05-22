@@ -3,7 +3,7 @@ name = "gapfill"
 version = "0.1.0"
 description = "溜缝儿 - AI 开发者的通用工具箱"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 requires-python = ">=3.8"
 authors = [
     { name = "Gapfill contributors" },

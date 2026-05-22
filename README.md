@@ -59,7 +59,7 @@ User ←→ gapfill Skill (dialogue layer, SKILL.md)
 
 ## License
 
-MIT
+Apache 2.0
 
 ---
 
