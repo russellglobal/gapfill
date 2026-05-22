@@ -9,7 +9,9 @@ import pytest
 
 def run_gapfill_init(tmp_path, extra_args=None):
     """运行 gapfill init 并返回结果"""
-    args = ["python", "-m", "gapfill", "init", str(tmp_path)]
+    # 通过 scripts/init.py 运行（与 skill 调用方式一致）
+    script_path = Path(__file__).resolve().parent.parent / "scripts" / "init.py"
+    args = ["python", str(script_path), str(tmp_path)]
     if extra_args:
         args.extend(extra_args)
     result = subprocess.run(args, capture_output=True, text=True)

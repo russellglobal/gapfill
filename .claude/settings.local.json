@@ -144,7 +144,8 @@
       "Bash(rm -rf src/gapfill/__pycache__ src/gapfill/commands/__pycache__ src/gapfill/templates/__pycache__ tests/__pycache__ .pytest_cache)",
       "Bash(PYTHONPATH=src python -m gapfill --version)",
       "Bash(PYTHONPATH=src python -m gapfill --help)",
-      "Bash(PYTHONPATH=src python -m pytest tests/ -v)"
+      "Bash(PYTHONPATH=src python -m pytest tests/ -v)",
+      "Bash(PYTHONPATH=src python -m pytest tests/test_init.py -v)"
     ]
   }
 }
