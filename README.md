@@ -1,6 +1,8 @@
 # gapfill
 
-AI-assisted development toolkit — like Hutool for the AI era. Bootstrap new projects with Claude Code permissions, docs, and git skeleton in one command.
+AI-assisted development toolkit — Bootstrap new projects with Claude Code permissions, docs, and git skeleton in one command.
+
+[English](README.md) · [中文](README_zh.md)
 
 ## Installation
 
@@ -61,12 +63,6 @@ MIT
 
 ---
 
-## 中文说明
+For Chinese documentation, see [README_zh.md](README_zh.md).
 
-> gapfill（溜缝儿）是 AI 开发者的通用工具箱，类似 Java 生态的 Hutool。为新项目自动初始化 Claude Code 权限、配置和文档骨架，让 AI 助手开箱即用。
-
-详细中文文档请参阅项目 README 英文部分，或提交 Issue 请求中文版。
-
-### 术语表
-
-关键术语的中英文对照见 [docs/glossary.md](docs/glossary.md)。新增翻译前请先查阅。
+For terminology glossary, see [docs/glossary.md](docs/glossary.md).
