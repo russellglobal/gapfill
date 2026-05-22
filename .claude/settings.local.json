@@ -167,7 +167,8 @@
       "Read(//d/proApes/test/**)",
       "Bash(python -c \"import zipfile; zipfile.ZipFile\\(''''gapfill-skill.zip'''', ''''r''''\\).extractall\\(''''.''''\\)\")",
       "Bash(cp \"D:/proApes/ccProjects/idea_analysis/src/gapfill/commands/init.py\" \"D:/proApes/test/skills/gapfill/src/gapfill/commands/\")",
-      "Bash(rm -rf \"D:/proApes/test/my-new-project\")"
+      "Bash(rm -rf \"D:/proApes/test/my-new-project\")",
+      "Bash(PYTHONIOENCODING=utf-8 python skills/gapfill/scripts/init.py ./test-encoding-fix)"
     ]
   }
 }

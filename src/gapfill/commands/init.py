@@ -1,10 +1,16 @@
 """init 子命令"""
 
+import io
 import json
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+# Windows 中文控制台编码修复
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 from gapfill.templates import TEMPLATES_DIR
 from gapfill.utils import (
