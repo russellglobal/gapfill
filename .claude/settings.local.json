@@ -145,7 +145,27 @@
       "Bash(PYTHONPATH=src python -m gapfill --version)",
       "Bash(PYTHONPATH=src python -m gapfill --help)",
       "Bash(PYTHONPATH=src python -m pytest tests/ -v)",
-      "Bash(PYTHONPATH=src python -m pytest tests/test_init.py -v)"
+      "Bash(PYTHONPATH=src python -m pytest tests/test_init.py -v)",
+      "Bash(mkdir -p ~/.claude/skills/gapfill/scripts)",
+      "Bash(cp \"D:/proApes/ccProjects/idea_analysis/scripts/init.py\" ~/.claude/skills/gapfill/scripts/init.py)",
+      "Bash(mkdir -p ~/.claude/skills/gapfill/src/gapfill/commands ~/.claude/skills/gapfill/src/gapfill/templates)",
+      "Bash(cp -r \"D:/proApes/ccProjects/idea_analysis/src/gapfill/commands/\"* ~/.claude/skills/gapfill/src/gapfill/commands/)",
+      "Bash(cp -r \"D:/proApes/ccProjects/idea_analysis/src/gapfill/templates/\"* ~/.claude/skills/gapfill/src/gapfill/templates/)",
+      "Bash(cp \"D:/proApes/ccProjects/idea_analysis/src/gapfill/__init__.py\" ~/.claude/skills/gapfill/src/gapfill/)",
+      "Bash(cp \"D:/proApes/ccProjects/idea_analysis/src/gapfill/utils.py\" ~/.claude/skills/gapfill/src/gapfill/)",
+      "Bash(mkdir -p /tmp/test-gapfill-project/skills)",
+      "Bash(cp -r ~/.claude/skills/gapfill /tmp/test-gapfill-project/skills/gapfill)",
+      "Bash(mkdir -p \"D:/proApes/test/skills\")",
+      "Bash(cp -r \"D:/proApes/ccProjects/idea_analysis/skills/gapfill\" \"D:/proApes/test/skills/gapfill\")",
+      "Read(//d/proApes/test/skills/**)",
+      "Bash(cp skills/gapfill/SKILL.md /tmp/gapfill-skill-pkg/skills/gapfill/)",
+      "Bash(cp scripts/init.py /tmp/gapfill-skill-pkg/skills/gapfill/scripts/)",
+      "Bash(cp src/gapfill/__init__.py /tmp/gapfill-skill-pkg/skills/gapfill/src/gapfill/)",
+      "Bash(cp src/gapfill/utils.py /tmp/gapfill-skill-pkg/skills/gapfill/src/gapfill/)",
+      "Bash(cp src/gapfill/commands/__init__.py /tmp/gapfill-skill-pkg/skills/gapfill/src/gapfill/commands/)",
+      "Bash(cp /tmp/gapfill-skill.zip \"D:/proApes/test/\")",
+      "Read(//d/proApes/test/**)",
+      "Bash(python -c \"import zipfile; zipfile.ZipFile\\(''''gapfill-skill.zip'''', ''''r''''\\).extractall\\(''''.''''\\)\")"
     ]
   }
 }
