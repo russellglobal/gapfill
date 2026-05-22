@@ -30,7 +30,7 @@ Claude 会调用 gapfill skill 执行初始化。
 3. **创建文件** — .gitignore、README.md、CLAUDE.md、settings.local.json、env-info.txt
 4. **权限预置** — 基础级 + 低风险级权限，减少 AI 交互轮次
 5. **环境探测** — 自动记录可用工具和版本
-6. **远程仓库** — 如果有 gh CLI，自动创建 GitHub 仓库并推送
+6. **首次提交** — 自动 commit 所有文件
 
 ## 架构
 

@@ -1,7 +1,6 @@
 """init 子命令"""
 
 import io
-import json
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -26,12 +25,10 @@ from gapfill.utils import (
 def init_command(args):
     """执行 init 子命令"""
     project_path = Path(args.path).resolve()
-    platform_name = args.platform
-    is_public = args.public
 
-    # 1. 环境检查 + 缺失组件安装
+    # 1. 环境检查
     print("检查环境...")
-    _check_and_install(platform_name)
+    _check_env()
 
     # 2. 本地目录处理
     if not project_path.exists():
@@ -60,134 +57,21 @@ def init_command(args):
 
     print(f"\n本地初始化完成: {project_path}")
 
-    # 5. 远程仓库创建 + 推送
-    _create_remote_repo(project_path, platform_name, is_public)
 
-
-def _check_and_install(platform_name):
-    """环境检查 + 缺失组件安装提示"""
-    from gapfill.utils import detect_git, detect_ssh_key, detect_gh_cli
-
+def _check_env():
+    """环境检查"""
     # git 是必须的
     if not detect_git():
         print("未检测到 git，请先安装 git")
         sys.exit(1)
     print("  git: 已安装")
 
-    # SSH key 是必须的（用于认证）
+    # 检查 SSH key
     ssh_key = detect_ssh_key()
-    if not ssh_key:
-        print("  未检测到 SSH key")
-        print("  正在自动创建 SSH key (ed25519)...")
-        _generate_ssh_key()
-        ssh_key = detect_ssh_key()
-        if ssh_key:
-            print(f"  SSH key 已创建: {ssh_key}")
-            _print_ssh_setup_guide()
-        else:
-            print("  SSH key 创建失败，请手动运行: ssh-keygen -t ed25519")
-            sys.exit(1)
-    else:
+    if ssh_key:
         print(f"  SSH key: {ssh_key}")
-
-    # gh CLI 非必须，但影响远程仓库创建
-    if platform_name == "github":
-        if detect_gh_cli():
-            print("  gh CLI: 已安装")
-        else:
-            print("  gh CLI: 未安装（用于自动创建远程仓库）")
-            if _confirm_install_gh_cli():
-                print("  正在尝试安装...")
-                _install_gh_cli()
-                if detect_gh_cli():
-                    print("  gh CLI: 安装成功")
-                else:
-                    print("  gh CLI: 安装失败")
-                    print("  本地初始化不受影响，稍后可手动安装后再创建远程仓库。")
-            else:
-                print("  已跳过 gh CLI 安装。")
-                print("  后续如需创建远程仓库，请先安装 gh CLI 并运行 gh auth login。")
-
-
-def _generate_ssh_key():
-    """自动生成 SSH key"""
-    import subprocess
-    result = subprocess.run(
-        ["ssh-keygen", "-t", "ed25519", "-C", "gapfill-generated-key",
-         "-f", str(Path.home() / ".ssh" / "id_ed25519"), "-N", "", "-q"],
-        capture_output=True, text=True, timeout=30
-    )
-    return result.returncode == 0
-
-
-def _print_ssh_setup_guide():
-    """打印 SSH key 配置指南"""
-    pub_key_path = Path.home() / ".ssh" / "id_ed25519.pub"
-    try:
-        pub_key = pub_key_path.read_text().strip()
-    except Exception:
-        pub_key = "（请读取 ~/.ssh/id_ed25519.pub 内容）"
-
-    print("\n  ⚠️  首次使用需要将公钥添加到 Git 平台：")
-    print("    GitHub:  https://github.com/settings/ssh/new")
-    print("    Gitee:   https://gitee.com/profile/ssh_keys")
-    print("    GitLab:  https://gitlab.com/-/profile/keys")
-    print(f"  公钥: {pub_key}\n")
-
-
-def _confirm_install_gh_cli():
-    """询问用户是否安装 gh CLI"""
-    print("  是否现在安装 gh CLI？（用于自动创建远程仓库）")
-    print("    Windows: winget install --id GitHub.cli")
-    print("    Mac:     brew install gh")
-    print("    Linux:   sudo snap install gh")
-    try:
-        choice = input("  [Y/n]: ").strip().lower()
-        return choice == "" or choice.startswith("y")
-    except (EOFError, KeyboardInterrupt):
-        print("  非交互模式，跳过安装。")
-        return False
-
-
-def _install_gh_cli():
-    """尝试自动安装 gh CLI"""
-    import shutil
-    import subprocess
-
-    if shutil.which("winget"):
-        print("  正在通过 winget 安装 gh CLI...")
-        print("  这可能需要几分钟，请耐心等待...")
-        result = subprocess.run(
-            ["winget", "install", "--id", "GitHub.cli", "--silent", "--accept-package-agreements", "--accept-source-agreements"],
-            capture_output=True, text=True, timeout=300
-        )
-        if result.returncode == 0:
-            print("  ✅ gh CLI 安装成功")
-        else:
-            print(f"  winget 安装失败: {result.stderr}")
-    elif shutil.which("brew"):
-        print("  正在通过 Homebrew 安装 gh CLI...")
-        result = subprocess.run(
-            ["brew", "install", "gh"],
-            capture_output=True, text=True, timeout=300
-        )
-        if result.returncode == 0:
-            print("  ✅ gh CLI 安装成功")
-        else:
-            print(f"  brew 安装失败: {result.stderr}")
-    elif shutil.which("snap"):
-        print("  正在通过 snap 安装 gh CLI...")
-        result = subprocess.run(
-            ["sudo", "snap", "install", "gh"],
-            capture_output=True, text=True, timeout=300
-        )
-        if result.returncode == 0:
-            print("  ✅ gh CLI 安装成功")
-        else:
-            print(f"  snap 安装失败: {result.stderr}")
     else:
-        print("  未找到包管理器，无法自动安装")
-        print("  请手动安装: https://github.com/cli/cli#installation")
+        print("  SSH key: 未检测到（如需推送远程仓库请先配置）")
 
 
 def _read_template(filename):
@@ -241,52 +125,3 @@ def _create_env_info(project_path):
         .replace("{{tools_info}}", tools_text)
     )
     _write_file(project_path / "env-info.txt", content)
-
-
-def _create_remote_repo(project_path, platform_name, is_public):
-    """创建远程仓库并推送（如已存在则直接推送）"""
-    if platform_name != "github":
-        print(f"  平台 {platform_name} 暂不支持自动创建")
-        return
-
-    from gapfill.utils import (
-        detect_gh_cli, detect_git_username,
-        create_github_repo, bind_remote_and_push,
-    )
-
-    if not detect_gh_cli():
-        print("  gh CLI 未安装，无法创建远程仓库")
-        return
-
-    repo_name = project_path.name
-    print(f"检查远程仓库 {repo_name}...")
-
-    # 先检查仓库是否存在
-    exists = _check_github_repo_exists(repo_name)
-
-    if not exists:
-        print(f"  远程仓库不存在，正在创建...")
-        result = create_github_repo(repo_name, is_public)
-        if result.returncode != 0:
-            print(f"  创建失败: {result.stderr}")
-            return
-        print(f"  远程仓库已创建")
-    else:
-        print(f"  仓库已存在，直接推送")
-
-    # 推送代码
-    username = detect_git_username(platform_name) or "unknown"
-    push_result = bind_remote_and_push(project_path, platform_name, username, repo_name)
-    if push_result.returncode == 0:
-        print(f"  推送成功")
-    else:
-        print(f"  推送失败: {push_result.stderr}")
-
-
-def _check_github_repo_exists(repo_name):
-    """通过 gh CLI 检查远程仓库是否存在"""
-    result = subprocess.run(
-        ["gh", "repo", "view", repo_name],
-        capture_output=True, text=True, timeout=10
-    )
-    return result.returncode == 0

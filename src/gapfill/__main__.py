@@ -19,13 +19,6 @@ def main():
     # init 子命令
     init_parser = subparsers.add_parser("init", help="初始化新项目")
     init_parser.add_argument("path", nargs="?", default=".", help="项目路径（默认当前目录）")
-    init_parser.add_argument("--public", action="store_true", help="创建公开仓库（默认私有）")
-    init_parser.add_argument(
-        "--platform",
-        choices=["github", "gitee", "gitlab"],
-        default="github",
-        help="Git 平台（默认 github）",
-    )
 
     args = parser.parse_args()
 

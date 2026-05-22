@@ -21,13 +21,6 @@ def main():
         description="溜缝儿 - 项目初始化",
     )
     parser.add_argument("path", nargs="?", default=".", help="项目路径（默认当前目录）")
-    parser.add_argument("--public", action="store_true", help="创建公开仓库（默认私有）")
-    parser.add_argument(
-        "--platform",
-        choices=["github", "gitee", "gitlab"],
-        default="github",
-        help="Git 平台（默认 github）",
-    )
 
     args = parser.parse_args()
     init_command(args)
