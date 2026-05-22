@@ -89,13 +89,18 @@ def _check_and_install(platform_name):
         if detect_gh_cli():
             print("  gh CLI: 已安装")
         else:
-            print("  gh CLI: 未安装（可选，用于自动创建远程仓库）")
-            print("  建议安装。安装命令（任选其一）：")
-            print("    Windows: winget install --id GitHub.cli")
-            print("    Mac:     brew install gh")
-            print("    Linux:   sudo snap install gh")
-            print("  安装后运行: gh auth login")
-            print("  跳过此步不影响本地初始化。")
+            print("  gh CLI: 未安装（用于自动创建远程仓库）")
+            if _confirm_install_gh_cli():
+                print("  正在尝试安装...")
+                _install_gh_cli()
+                if detect_gh_cli():
+                    print("  gh CLI: 安装成功")
+                else:
+                    print("  gh CLI: 安装失败")
+                    print("  本地初始化不受影响，稍后可手动安装后再创建远程仓库。")
+            else:
+                print("  已跳过 gh CLI 安装。")
+                print("  后续如需创建远程仓库，请先安装 gh CLI 并运行 gh auth login。")
 
 
 def _generate_ssh_key():
@@ -122,6 +127,61 @@ def _print_ssh_setup_guide():
     print("    Gitee:   https://gitee.com/profile/ssh_keys")
     print("    GitLab:  https://gitlab.com/-/profile/keys")
     print(f"  公钥: {pub_key}\n")
+
+
+def _confirm_install_gh_cli():
+    """询问用户是否安装 gh CLI"""
+    print("  是否现在安装 gh CLI？（用于自动创建远程仓库）")
+    print("    Windows: winget install --id GitHub.cli")
+    print("    Mac:     brew install gh")
+    print("    Linux:   sudo snap install gh")
+    try:
+        choice = input("  [Y/n]: ").strip().lower()
+        return choice == "" or choice.startswith("y")
+    except (EOFError, KeyboardInterrupt):
+        print("  非交互模式，跳过安装。")
+        return False
+
+
+def _install_gh_cli():
+    """尝试自动安装 gh CLI"""
+    import shutil
+    import subprocess
+
+    if shutil.which("winget"):
+        print("  正在通过 winget 安装 gh CLI...")
+        print("  这可能需要几分钟，请耐心等待...")
+        result = subprocess.run(
+            ["winget", "install", "--id", "GitHub.cli", "--silent", "--accept-package-agreements", "--accept-source-agreements"],
+            capture_output=True, text=True, timeout=300
+        )
+        if result.returncode == 0:
+            print("  ✅ gh CLI 安装成功")
+        else:
+            print(f"  winget 安装失败: {result.stderr}")
+    elif shutil.which("brew"):
+        print("  正在通过 Homebrew 安装 gh CLI...")
+        result = subprocess.run(
+            ["brew", "install", "gh"],
+            capture_output=True, text=True, timeout=300
+        )
+        if result.returncode == 0:
+            print("  ✅ gh CLI 安装成功")
+        else:
+            print(f"  brew 安装失败: {result.stderr}")
+    elif shutil.which("snap"):
+        print("  正在通过 snap 安装 gh CLI...")
+        result = subprocess.run(
+            ["sudo", "snap", "install", "gh"],
+            capture_output=True, text=True, timeout=300
+        )
+        if result.returncode == 0:
+            print("  ✅ gh CLI 安装成功")
+        else:
+            print(f"  snap 安装失败: {result.stderr}")
+    else:
+        print("  未找到包管理器，无法自动安装")
+        print("  请手动安装: https://github.com/cli/cli#installation")
 
 
 def _read_template(filename):
