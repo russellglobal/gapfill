@@ -1,18 +1,18 @@
-"""aidev CLI 入口"""
+"""gapfill CLI 入口"""
 
 import argparse
 import sys
 
-from aidev import __version__
-from aidev.commands.init import init_command
+from gapfill import __version__
+from gapfill.commands.init import init_command
 
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="aidev",
-        description="AI 开发者的通用工具箱",
+        prog="gapfill",
+        description="溜缝儿 - AI 开发者的通用工具箱",
     )
-    parser.add_argument("--version", action="version", version=f"aidev {__version__}")
+    parser.add_argument("--version", action="version", version=f"gapfill {__version__}")
 
     subparsers = parser.add_subparsers(dest="command", help="可用子命令")
 

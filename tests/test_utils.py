@@ -1,6 +1,6 @@
 """工具函数测试"""
 
-from aidev.utils import detect_git, detect_tools, get_os_info
+from gapfill.utils import detect_git, detect_tools, get_os_info
 
 
 def test_detect_git():

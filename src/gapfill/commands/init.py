@@ -6,8 +6,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from aidev.templates import TEMPLATES_DIR
-from aidev.utils import (
+from gapfill.templates import TEMPLATES_DIR
+from gapfill.utils import (
     detect_git,
     detect_ssh_key,
     get_os_info,
@@ -60,12 +60,38 @@ def init_command(args):
     # 4. 首次提交
     print("首次 git commit...")
     run_git(project_path, "add", "-A")
-    run_git(project_path, "commit", "-m", "chore: init project by aidev")
+    run_git(project_path, "commit", "-m", "chore: init project by gapfill")
 
     print(f"\n本地初始化完成: {project_path}")
 
-    # 5. 远程仓库创建（Task 4 实现）
-    print("远程仓库功能待实现（v2）")
+    # 5. 远程仓库创建
+    print("创建远程仓库...")
+    from gapfill.utils import (
+        detect_gh_cli, detect_git_username,
+        create_github_repo, create_repo_via_api,
+        bind_remote_and_push,
+    )
+
+    if detect_gh_cli() and platform_name == "github":
+        result = create_github_repo(project_path.name, is_public)
+        if result.returncode == 0:
+            print(f"  远程仓库已创建")
+        else:
+            print(f"  仓库创建可能已存在，尝试推送...")
+            username = detect_git_username(platform_name) or "unknown"
+            push_result = bind_remote_and_push(project_path, platform_name, username, project_path.name)
+            if push_result.returncode == 0:
+                print(f"  推送成功")
+            else:
+                print(f"  推送失败: {push_result.stderr}")
+                print(f"  请手动执行: cd {project_path} && git remote add origin <url> && git push -u origin main")
+    else:
+        print(f"  未检测到 gh CLI 或平台不是 GitHub")
+        print(f"  提示: 安装 gh CLI (https://cli.github.com) 可自动创建仓库")
+        print(f"  或手动创建仓库后执行:")
+        print(f"    cd {project_path}")
+        print(f"    git remote add origin <remote-url>")
+        print(f"    git push -u origin main")
 
 
 def _read_template(filename):
