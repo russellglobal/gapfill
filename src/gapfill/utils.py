@@ -1,4 +1,4 @@
-"""通用工具函数"""
+"""Utility functions."""
 
 import os
 import platform
@@ -8,12 +8,12 @@ from pathlib import Path
 
 
 def detect_git():
-    """检测 git 是否可用"""
+    """Check if git is available."""
     return shutil.which("git") is not None
 
 
 def detect_ssh_key():
-    """检测 SSH key 是否存在，返回 key 路径或 None"""
+    """Check if an SSH key exists. Returns the key path or None."""
     ssh_dir = Path.home() / ".ssh"
     for key_name in ["id_ed25519", "id_rsa"]:
         key_path = ssh_dir / key_name
@@ -23,7 +23,7 @@ def detect_ssh_key():
 
 
 def detect_tools():
-    """探测环境中可用的开发工具及其版本"""
+    """Probe available development tools and their versions."""
     tools = {
         "python": ["python", "--version"],
         "python3": ["python3", "--version"],
@@ -47,12 +47,12 @@ def detect_tools():
                 version = (output.stdout or output.stderr).strip().split("\n")[0]
                 results[name] = version
             except Exception:
-                results[name] = "检测失败"
+                results[name] = "Detection failed"
     return results
 
 
 def get_os_info():
-    """获取操作系统信息"""
+    """Get operating system information."""
     return {
         "system": platform.system(),
         "release": platform.release(),
@@ -62,7 +62,7 @@ def get_os_info():
 
 
 def run_git(cwd, *args):
-    """在指定目录运行 git 命令"""
+    """Run a git command in the specified directory."""
     result = subprocess.run(
         ["git"] + list(args),
         cwd=cwd,
@@ -73,5 +73,5 @@ def run_git(cwd, *args):
 
 
 def has_git_repo(path):
-    """检查目录是否已有 git 仓库"""
+    """Check if a directory has a git repository."""
     return (Path(path) / ".git").exists()
