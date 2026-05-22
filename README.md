@@ -1,59 +1,72 @@
-# gapfill（溜缝儿）
+# gapfill
 
-AI 开发者的通用工具箱 —— 类似 Java 生态的 Hutool，为 AI 辅助开发流程中的各种小痛点提供轻量解决方案。
+AI-assisted development toolkit — like Hutool for the AI era. Bootstrap new projects with Claude Code permissions, docs, and git skeleton in one command.
 
-## 安装
+## Installation
 
-将 `skills/gapfill/` 目录复制到 Claude Code 的 skills 目录：
+Copy the `skills/gapfill/` directory to your Claude Code skills directory:
 
 ```bash
-# 用户级安装
 cp -r skills/gapfill ~/.claude/skills/gapfill
 ```
 
-## 使用
+Requires **Python 3.8+** and **git**. Zero external dependencies.
 
-安装后，在 Claude Code 中直接说：
+## Usage
 
-> "帮我初始化一个新项目"
+After installation, tell Claude Code:
 
-或
+> "Initialize a new project"
 
-> "帮我在 ./my-project 目录创建一个项目"
+Or:
 
-Claude 会调用 gapfill skill 执行初始化。
+> "Create a project in ./my-project"
 
-## init 做了什么
+Claude will invoke the gapfill skill to run initialization.
 
-1. **环境检查** — 检测 git、SSH key 等
-2. **Git 初始化** — 如果目录没有 .git，自动 git init
-3. **创建文件** — .gitignore、README.md、CLAUDE.md、settings.local.json、env-info.txt
-4. **权限预置** — 基础级 + 低风险级权限，减少 AI 交互轮次
-5. **环境探测** — 自动记录可用工具和版本
-6. **首次提交** — 自动 commit 所有文件
+## What `init` Does
 
-## 架构
+1. **Environment check** — Detects git, SSH key availability
+2. **Git init** — Initializes `.git` if the directory has no repo
+3. **Scaffold files** — `.gitignore`, `README.md`, `CLAUDE.md`, `settings.local.json`, `env-info.txt`
+4. **Permission preset** — Pre-configures basic + low-risk permissions to reduce AI interaction rounds
+5. **Environment probe** — Records available tools and versions
+6. **Initial commit** — Auto-commits all scaffolded files
+
+## Architecture
 
 ```
-用户 ←→ gapfill Skill（对话层，SKILL.md）
-                ↓ 调用
-        内部 Python 脚本（执行层，scripts/init.py）
+User ←→ gapfill Skill (dialogue layer, SKILL.md)
+                ↓ invokes
+        Internal Python scripts (execution layer, scripts/init.py)
 ```
 
-- **Skill 是用户界面**：处理对话、审查、异常
-- **脚本是执行引擎**：保证速度和确定性，不消耗 token
-- **不发布 PyPI**：随 skill 一起分发
+- **Skill is the user interface**: handles dialogue, review, exceptions
+- **Scripts are the execution engine**: guarantees speed and determinism, consumes zero tokens
+- **Not published to PyPI**: distributed alongside the skill
 
-## 开发路线图
+## Roadmap
 
-| 版本 | 功能 |
-|------|------|
-| MVP | init（项目初始化） |
-| v2 | sync（跨项目配置同步）、perm（权限管理）、lang（语言设置）、feedback（一键提报） |
-| v3 | roadmap（决策自动沉淀） |
-| v4 | capture（高价值交互记录） |
-| v5 | audit（Skill 安全扫描）、skill-localize（开源 Skill 本地化） |
+| Version | Features |
+|---------|----------|
+| MVP | `init` (project initialization) |
+| v2 | `sync` (cross-project config sync), `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
+| v3 | `roadmap` (automatic decision logging) |
+| v4 | `capture` (high-value interaction recording) |
+| v5 | `audit` (skill security scanning), `skill-localize` (open-source skill localization) |
 
-## 许可证
+## License
 
 MIT
+
+---
+
+## 中文说明
+
+> gapfill（溜缝儿）是 AI 开发者的通用工具箱，类似 Java 生态的 Hutool。为新项目自动初始化 Claude Code 权限、配置和文档骨架，让 AI 助手开箱即用。
+
+详细中文文档请参阅项目 README 英文部分，或提交 Issue 请求中文版。
+
+### 术语表
+
+关键术语的中英文对照见 [docs/glossary.md](docs/glossary.md)。新增翻译前请先查阅。
