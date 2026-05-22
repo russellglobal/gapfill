@@ -178,7 +178,7 @@ def _create_env_info(project_path):
 
 
 def _create_remote_repo(project_path, platform_name, is_public):
-    """创建远程仓库并推送"""
+    """创建远程仓库并推送（如已存在则直接推送）"""
     if platform_name != "github":
         print(f"  平台 {platform_name} 暂不支持自动创建")
         return
@@ -192,15 +192,35 @@ def _create_remote_repo(project_path, platform_name, is_public):
         print("  gh CLI 未安装，无法创建远程仓库")
         return
 
-    print("创建远程仓库...")
-    result = create_github_repo(project_path.name, is_public)
-    if result.returncode == 0:
+    repo_name = project_path.name
+    print(f"检查远程仓库 {repo_name}...")
+
+    # 先检查仓库是否存在
+    exists = _check_github_repo_exists(repo_name)
+
+    if not exists:
+        print(f"  远程仓库不存在，正在创建...")
+        result = create_github_repo(repo_name, is_public)
+        if result.returncode != 0:
+            print(f"  创建失败: {result.stderr}")
+            return
         print(f"  远程仓库已创建")
     else:
-        print(f"  仓库可能已存在，尝试推送...")
-        username = detect_git_username(platform_name) or "unknown"
-        push_result = bind_remote_and_push(project_path, platform_name, username, project_path.name)
-        if push_result.returncode == 0:
-            print(f"  推送成功")
-        else:
-            print(f"  推送失败: {push_result.stderr}")
+        print(f"  仓库已存在，直接推送")
+
+    # 推送代码
+    username = detect_git_username(platform_name) or "unknown"
+    push_result = bind_remote_and_push(project_path, platform_name, username, repo_name)
+    if push_result.returncode == 0:
+        print(f"  推送成功")
+    else:
+        print(f"  推送失败: {push_result.stderr}")
+
+
+def _check_github_repo_exists(repo_name):
+    """通过 gh CLI 检查远程仓库是否存在"""
+    result = subprocess.run(
+        ["gh", "repo", "view", repo_name],
+        capture_output=True, text=True, timeout=10
+    )
+    return result.returncode == 0
