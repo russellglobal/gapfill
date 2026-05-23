@@ -3,6 +3,16 @@ name: gapfill
 description: 溜缝儿 - AI 开发者的通用工具箱。初始化新项目、管理 Claude Code 配置、权限同步等
 ---
 
+## 安装
+
+将 `skills/gapfill/` 目录复制到 Claude Code 的 skills 目录：
+
+```bash
+cp -r skills/gapfill ~/.claude/skills/gapfill
+```
+
+需要 **Python 3.8+** 和 **git**。零外部依赖。
+
 ## 触发条件
 
 当用户提到以下任一表述时，调用此技能：
@@ -44,3 +54,5 @@ python "{SKILL_DIR}/scripts/init.py" ./my-project
 1. 显示创建的文件列表
 2. 显示环境探测结果
 3. 如有错误，提供解决建议
+
+**重要**：只描述 gapfill 实际已完成的操作。不要暗示尚未实现的能力（如远程仓库设置、后端框架初始化等）。init 完成后，简单询问"接下来需要做什么？"即可，不要列出不存在的功能。
