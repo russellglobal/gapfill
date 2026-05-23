@@ -30,7 +30,7 @@ Claude 会调用 gapfill skill 执行初始化。
 
 1. **环境检查** — 检测 git、SSH key 等
 2. **Git 初始化** — 如果目录没有 .git，自动 git init
-3. **创建文件** — .gitignore、README.md、CLAUDE.md、settings.local.json、env-info.txt
+3. **创建文件** — .gitignore、README.md、settings.local.json、env-info.txt
 4. **权限预置** — 基础级 + 低风险级权限，减少 AI 交互轮次
 5. **环境探测** — 自动记录可用工具和版本
 6. **首次提交** — 自动 commit 所有文件

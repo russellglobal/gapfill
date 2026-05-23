@@ -44,7 +44,7 @@ python "{SKILL_DIR}/scripts/init.py" ./my-project
 ### 执行流程
 1. 环境检查（git / SSH key）
 2. Git 初始化（如无 .git）
-3. 创建文件：.gitignore、README.md、CLAUDE.md、settings.local.json、env-info.txt
+3. 创建文件：.gitignore、README.md、settings.local.json、env-info.txt
 4. 权限预置：基础级 + 低风险级
 5. 环境探测：记录可用工具和版本
 6. 首次提交（chore: init project by gapfill）

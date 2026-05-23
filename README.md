@@ -30,7 +30,7 @@ Claude will invoke the gapfill skill to run initialization.
 
 1. **Environment check** — Detects git, SSH key availability
 2. **Git init** — Initializes `.git` if the directory has no repo
-3. **Scaffold files** — `.gitignore`, `README.md`, `CLAUDE.md`, `settings.local.json`, `env-info.txt`
+3. **Scaffold files** — `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`
 4. **Permission preset** — Pre-configures basic + low-risk permissions to reduce AI interaction rounds
 5. **Environment probe** — Records available tools and versions
 6. **Initial commit** — Auto-commits all scaffolded files

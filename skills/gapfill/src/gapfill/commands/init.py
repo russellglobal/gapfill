@@ -46,7 +46,6 @@ def init_command(args):
     print("创建项目文件...")
     _create_gitignore(project_path)
     _create_readme(project_path, project_path.name)
-    _create_claude_md(project_path, project_path.name)
     _create_settings(project_path)
     _create_env_info(project_path)
 
@@ -95,11 +94,6 @@ def _create_gitignore(project_path):
 def _create_readme(project_path, project_name):
     content = _read_template("readme.md").replace("{{project_name}}", project_name)
     _write_file(project_path / "README.md", content)
-
-
-def _create_claude_md(project_path, project_name):
-    content = _read_template("claude.md").replace("{{project_name}}", project_name)
-    _write_file(project_path / "CLAUDE.md", content)
 
 
 def _create_settings(project_path):

@@ -44,7 +44,7 @@ python "{SKILL_DIR}/scripts/init.py" ./my-project
 ### Execution Flow
 1. Environment check (git / SSH key)
 2. Git initialization (if no .git exists)
-3. Scaffold files: .gitignore, README.md, CLAUDE.md, settings.local.json, env-info.txt
+3. Scaffold files: .gitignore, README.md, settings.local.json, env-info.txt
 4. Permission preset: basic + low-risk levels
 5. Environment probe: record available tools and versions
 6. Initial commit (chore: init project by gapfill)
