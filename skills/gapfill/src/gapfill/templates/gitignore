@@ -21,15 +21,6 @@ venv/
 .env.*
 !.env.example
 
-# Security
-*.key
-*.pem
-*.crt
-credentials.json
-secrets.json
-*.id_rsa
-*.id_ed25519
-
 # Node
 node_modules/
 npm-debug.log*
@@ -39,8 +30,7 @@ target/
 *.class
 
 # Claude Code
-# .claude/ contains project-specific config; settings.local.json is committed
-# as part of gapfill init (permission presets)
+.claude/settings.local.json
 
 # 缓存和测试
 .pytest_cache/

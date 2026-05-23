@@ -1,12 +1,15 @@
 """init subcommand"""
 
+import io
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from gapfill.utils import fix_windows_encoding
-
-fix_windows_encoding()
+# Fix Chinese encoding for Windows console
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 from gapfill.templates import TEMPLATES_DIR
 from gapfill.utils import (
@@ -17,7 +20,6 @@ from gapfill.utils import (
     has_git_repo,
     run_git,
 )
-from gapfill.constants import VALID_STACKS, VALID_LANGS
 
 
 def init_command(args):
@@ -44,53 +46,16 @@ def init_command(args):
     print("创建项目文件...")
     _create_gitignore(project_path)
     _create_readme(project_path, project_path.name)
+    _create_claude_md(project_path, project_path.name)
     _create_settings(project_path)
+    _create_env_info(project_path)
 
-    # 4. Generate CLAUDE.md if --stack specified
-    if getattr(args, "stack", None):
-        lang = getattr(args, "lang", "en")
-        _create_claude_md(project_path, args.stack, lang)
-
-    # 5. Generate env-info.txt
-    lang = getattr(args, "lang", "en")
-    _create_env_info(project_path, lang)
-
-    # 6. Initial commit (only for empty repos)
-    _do_commit(project_path)
+    # 4. Initial commit
+    print("首次 git commit...")
+    run_git(project_path, "add", "-A")
+    run_git(project_path, "commit", "-m", "chore: init project by gapfill")
 
     print(f"\n本地初始化完成: {project_path}")
-
-
-def _do_commit(project_path):
-    """Commit scaffolded files. Auto-commit only for empty repos (no existing commits)."""
-    has_commits = _has_existing_commits(project_path)
-
-    if has_commits:
-        print("已有 git 提交历史，跳过自动 commit")
-        print("请手动执行: git add -A && git commit -m 'chore: init project by gapfill'")
-        return
-
-    print("首次 git commit...")
-    add_result = run_git(project_path, "add", "-A")
-    if add_result.returncode != 0:
-        print(f"git add 失败: {add_result.stderr}")
-        sys.exit(1)
-    commit_result = run_git(project_path, "commit", "-m", "chore: init project by gapfill")
-    if commit_result.returncode != 0:
-        print(f"git commit 失败: {commit_result.stderr}")
-        print("如果文件都已存在，可能无需提交")
-
-
-def _has_existing_commits(project_path):
-    """Check if the git repo has any existing commits."""
-    result = run_git(project_path, "rev-list", "--count", "HEAD")
-    if result.returncode != 0:
-        return False  # fresh repo, no commits yet
-    try:
-        count = int(result.stdout.strip())
-        return count > 0
-    except (ValueError, IndexError):
-        return False
 
 
 def _check_env():
@@ -132,6 +97,11 @@ def _create_readme(project_path, project_name):
     _write_file(project_path / "README.md", content)
 
 
+def _create_claude_md(project_path, project_name):
+    content = _read_template("claude.md").replace("{{project_name}}", project_name)
+    _write_file(project_path / "CLAUDE.md", content)
+
+
 def _create_settings(project_path):
     content = _read_template("settings.json")
     claude_dir = project_path / ".claude"
@@ -160,11 +130,8 @@ def _create_settings(project_path):
         print("  非交互模式，已保留现有 settings.local.json")
 
 
-def _create_env_info(project_path, lang="en"):
-    if lang == "zh":
-        template = _read_template("env_info_zh.txt")
-    else:
-        template = _read_template("env_info.txt")
+def _create_env_info(project_path):
+    template = _read_template("env_info.txt")
     os_info = get_os_info()
     tools_info = detect_tools()
 
@@ -177,17 +144,3 @@ def _create_env_info(project_path, lang="en"):
         .replace("{{tools_info}}", tools_text)
     )
     _write_file(project_path / "env-info.txt", content)
-
-
-def _create_claude_md(project_path, stack, lang="en"):
-    """Generate CLAUDE.md from a tech stack template during init."""
-    if stack not in VALID_STACKS:
-        print(f"警告: 不支持的技术栈 '{stack}'，跳过 CLAUDE.md 生成")
-        return
-    if lang not in VALID_LANGS:
-        print(f"警告: 不支持的语言 '{lang}'，使用默认英文")
-        lang = "en"
-    template_name = f"claude-{stack}" if lang == "en" else f"claude-{stack}-{lang}"
-    template = _read_template(f"{template_name}.md")
-    content = template.replace("{{project_name}}", project_path.name)
-    _write_file(project_path / "CLAUDE.md", content)
