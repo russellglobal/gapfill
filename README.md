@@ -64,62 +64,12 @@ Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`.
 Auto-detects git and SSH key status.
 With `--stack`, also generates a tech-stack-specific CLAUDE.md.
 
-**Commit behavior:** Auto-commits only for empty repos (no existing commits). If the project already has a git history, files are created but you commit manually — no surprises.
-
-### `stack-claude-md` — CLAUDE.md Generator
-
-**Use when:** An existing project needs a CLAUDE.md. (For new projects, use `gapfill init --stack`.)
-
-```
-gapfill stack-claude-md                  # generic template
-gapfill stack-claude-md --stack spring-boot  # Spring Boot 3.x
-gapfill stack-claude-md --stack react        # React 19 + TypeScript
-gapfill stack-claude-md --stack spring-boot --lang zh  # Chinese version
-```
-
-Pre-defined templates — no LLM calls. Never overwrites existing CLAUDE.md.
-
-### `review` — Pre-Commit Check
-
-**Use when:** Before `git commit`, catch issues from recent changes.
-
-```
-gapfill review
-```
-
-Runs 7 checks (zero tokens consumed):
-
-| Check | What it catches |
-|-------|-----------------|
-| 副本一致性 | Files out of sync between src/ and skills/src/ |
-| 死引用 | Import from a module that doesn't exist |
-| 危险权限 | `Write(/**)`, `Bash(curl:*)` in settings template |
-| 过期内容 | Stale project names left in code |
-| JSON 语法 | Broken JSON in any *.json file |
-| 脚本语法 | Syntax errors in scripts/*.py |
-| 敏感文件忽略 | .gitignore missing common secret filenames |
-
-Exits with code 1 if errors found.
-
-### `scan` — Permission Audit
-
-**Use when:** Auditing a directory of projects for dangerous permissions.
-
-```
-gapfill scan /path/to/projects
-```
-
-Scans all `settings.local.json` files and flags high-risk (`Write(/**)`, `Bash(curl:*)`) and low-risk (`Bash(find:*)`, `Bash(python:*)`) permissions.
-
-### `sync` — Permission Comparison
-
-**Use when:** You have multiple projects with different permission rules.
-
-```
-gapfill sync
-```
-
-Shows differences and suggests a merged configuration. Report-only.
+1. **Environment check** — Detects git, SSH key availability
+2. **Git init** — Initializes `.git` if the directory has no repo
+3. **Scaffold files** — `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`
+4. **Permission preset** — Pre-configures basic + low-risk permissions to reduce AI interaction rounds
+5. **Environment probe** — Records available tools and versions
+6. **Initial commit** — Auto-commits all scaffolded files
 
 ## Architecture
 

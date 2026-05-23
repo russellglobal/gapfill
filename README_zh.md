@@ -64,62 +64,12 @@ gapfill init --stack spring-boot --lang zh  # 初始化 + 中文版 CLAUDE.md
 自动检测 git 和 SSH key 状态。
 加上 `--stack` 还会生成技术栈专属 CLAUDE.md。
 
-**提交逻辑：** 空仓库（无提交历史）自动 commit；已有提交历史的项目只创建文件，不自动 commit——避免意外修改。
-
-### `stack-claude-md` — CLAUDE.md 生成
-
-**什么时候用：** 已有项目需要 CLAUDE.md。（新项目直接用 `gapfill init --stack` 一步完成。）
-
-```
-gapfill stack-claude-md                        # 通用模板
-gapfill stack-claude-md --stack spring-boot    # Spring Boot 3.x
-gapfill stack-claude-md --stack react          # React 19 + TypeScript
-gapfill stack-claude-md --stack spring-boot --lang zh  # 中文版
-```
-
-预定义模板——不调用 LLM。绝不覆盖已有的 CLAUDE.md。
-
-### `review` — 提交前审查
-
-**什么时候用：** `git commit` 之前，检查近期改动引入的问题。
-
-```
-gapfill review
-```
-
-运行 7 项检查（零 token 消耗）：
-
-| 检查项 | 能发现的问题 |
-|--------|-------------|
-| 副本一致性 | src/ 和 skills/src/ 文件不同步 |
-| 死引用 | import 了不存在的模块 |
-| 危险权限 | settings 模板包含 `Write(/**)`、`Bash(curl:*)` |
-| 过期内容 | 代码中残留旧项目名 |
-| JSON 语法 | 任意 *.json 文件格式错误 |
-| 脚本语法 | scripts/*.py 有语法错误 |
-| 敏感文件忽略 | .gitignore 未覆盖常见敏感文件名 |
-
-有错误时退出码为 1。
-
-### `scan` — 权限审计
-
-**什么时候用：** 审计一个目录下所有项目的 settings.local.json。
-
-```
-gapfill scan /path/to/projects
-```
-
-扫描所有项目的权限配置，标记高危（`Write(/**)`、`Bash(curl:*)`）和低风险（`Bash(find:*)`、`Bash(python:*)`）权限。
-
-### `sync` — 权限对比
-
-**什么时候用：** 多个项目的权限规则不一致，想合并统一。
-
-```
-gapfill sync
-```
-
-展示差异并建议合并配置。只报告，不修改文件。
+1. **环境检查** — 检测 git、SSH key 等
+2. **Git 初始化** — 如果目录没有 .git，自动 git init
+3. **创建文件** — .gitignore、README.md、settings.local.json、env-info.txt
+4. **权限预置** — 基础级 + 低风险级权限，减少 AI 交互轮次
+5. **环境探测** — 自动记录可用工具和版本
+6. **首次提交** — 自动 commit 所有文件
 
 ## 架构
 
