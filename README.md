@@ -87,11 +87,17 @@ User ←→ gapfill Skill (dialogue layer)
 
 | Version | Features |
 |---------|----------|
-| MVP | `init` (project initialization) |
-| v2 | `sync` (cross-project config sync, done), `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
-| v3 | `roadmap` (automatic decision logging) |
+| MVP | `init` (project initialization), `.gitignore`, `settings.local.json` preset |
+| v2 | `stack-md` (tech-stack-aware CLAUDE.md generation), `scan` (settings compliance audit), `auto-guard` (Auto Mode fallback rules) |
+| v3 | `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
 | v4 | `capture` (high-value interaction recording) |
-| v5 | `audit` (skill security scanning), `publish` (multi-language README sync & consistency check) |
+| v5 | `publish` (multi-language README sync & consistency check) |
+
+### Deprioritized
+- `sync` — cross-project config comparison (built, paused — user base too small currently)
+- `roadmap` — automatic decision logging (replaced by feasibility research process)
+- `audit` — skill security scanning (replaced by `scan` for settings compliance)
+- Team config sync — Anthropic Enterprise Admin covers this
 
 ## License
 
