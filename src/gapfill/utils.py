@@ -1,6 +1,7 @@
 """Utility functions."""
 
 import json
+import os
 import platform
 import shutil
 import subprocess

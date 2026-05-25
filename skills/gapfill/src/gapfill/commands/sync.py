@@ -1,12 +1,14 @@
 """sync subcommand - Cross-project permission comparison."""
 
+import io
 import json
 import sys
 from pathlib import Path
 
-from gapfill.utils import fix_windows_encoding
-
-fix_windows_encoding()
+# Fix Chinese encoding for Windows console
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 from gapfill.utils import scan_projects, merge_permissions, compute_diff
 
@@ -55,7 +57,7 @@ def sync_command(args):
         name = project_path.name
         count = len(settings.get("permissions", {}).get("allow", []))
         marker = " <-- 基准" if name == base_name else ""
-        print(f"  {name}: {count} 条规则{marker}")
+        print(f"  {name}: {count} rules{marker}")
 
     # 5. Compute and display diff
     diff = compute_diff(base_name, merge_result)

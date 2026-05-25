@@ -58,3 +58,38 @@ After the script completes, confirm with the user:
 3. Error messages with troubleshooting suggestions if any
 
 **Important**: Only describe what gapfill has actually done. Do NOT suggest capabilities that do not yet exist (e.g., remote repo setup, backend framework initialization, etc.). After init completes, simply ask "接下来需要做什么？" without listing unimplemented features.
+
+## sync Subcommand
+
+### Usage
+```bash
+python "{SKILL_DIR}/scripts/sync.py" [root] [--base project_name]
+```
+
+### Arguments
+- **root**: Directory to scan for projects (optional, defaults to parent of current directory)
+- **--base, -b**: Base project name to compare against (optional, auto-detects from cwd)
+
+### Examples
+```bash
+# Auto-detect base project from current directory
+python "{SKILL_DIR}/scripts/sync.py" /path/to/projects
+
+# Specify base project explicitly
+python "{SKILL_DIR}/scripts/sync.py" /path/to/projects --base my-project
+```
+
+### Execution Flow
+1. Scan directory tree for projects with `.claude/settings.local.json`
+2. Collect `permissions.allow` rules from each project
+3. Merge all unique rules and compute diff against base project
+4. Print project summary and rule differences
+5. Output JSON for Claude to process and present to user
+
+### After Execution
+After the script completes:
+1. Present the diff report to the user
+2. Ask which rules they want to sync
+3. Output the updated `settings.local.json` content (do NOT write to files automatically)
+
+**Important**: Always ask for user confirmation before generating any file changes. Never auto-modify `settings.local.json`.

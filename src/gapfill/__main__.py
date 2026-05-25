@@ -6,9 +6,6 @@ import sys
 from gapfill import __version__
 from gapfill.commands.init import init_command
 from gapfill.commands.sync import sync_command
-from gapfill.commands.stack_claude_md import stack_claude_md_command
-from gapfill.commands.review import review_command
-from gapfill.commands.scan import scan_command
 
 
 def main():
@@ -45,6 +42,11 @@ def main():
     scan_parser = subparsers.add_parser("scan", help="settings 合规扫描")
     scan_parser.add_argument("path", nargs="?", default=".", help="扫描目录（默认当前目录）")
 
+    # sync 子命令
+    sync_parser = subparsers.add_parser("sync", help="跨项目权限规则同步")
+    sync_parser.add_argument("root", nargs="?", default=None, help="扫描根目录（默认父目录）")
+    sync_parser.add_argument("--base", "-b", default=None, help="基准项目名称（默认自动检测）")
+
     args = parser.parse_args()
 
     if args.command is None:
@@ -55,12 +57,6 @@ def main():
         init_command(args)
     elif args.command == "sync":
         sync_command(args)
-    elif args.command == "stack-claude-md":
-        stack_claude_md_command(args)
-    elif args.command == "review":
-        review_command(args)
-    elif args.command == "scan":
-        scan_command(args)
 
 
 if __name__ == "__main__":

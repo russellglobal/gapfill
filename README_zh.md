@@ -85,14 +85,13 @@ gapfill init --stack spring-boot --lang zh  # 初始化 + 中文版 CLAUDE.md
 
 ## 开发路线图
 
-请参阅 [ROADMAP_zh.md](ROADMAP_zh.md)。
-
-## 贡献
-
-发现问题？提一个 [issue](https://github.com/russellglobal/gapfill/issues)。
-想贡献代码？Fork 仓库后提交 PR。
-
-如果觉得 gapfill 有用，一颗 ⭐ 能帮更多人找到它。
+| 版本 | 功能 |
+|------|------|
+| MVP | `init`（项目初始化） |
+| v2 | `sync`（跨项目配置同步，已完成）、`perm`（权限管理）、`lang`（语言设置）、`feedback`（一键提报） |
+| v3 | `roadmap`（决策自动沉淀） |
+| v4 | `capture`（高价值交互记录） |
+| v5 | `audit`（Skill 安全扫描）、`publish`（中英发布工作流） |
 
 ## 许可证
 
