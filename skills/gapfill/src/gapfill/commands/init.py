@@ -1,15 +1,12 @@
 """init subcommand"""
 
-import io
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Fix Chinese encoding for Windows console
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+from gapfill.utils import fix_windows_encoding
+
+fix_windows_encoding()
 
 from gapfill.templates import TEMPLATES_DIR
 from gapfill.utils import (
@@ -51,8 +48,14 @@ def init_command(args):
 
     # 4. Initial commit
     print("首次 git commit...")
-    run_git(project_path, "add", "-A")
-    run_git(project_path, "commit", "-m", "chore: init project by gapfill")
+    add_result = run_git(project_path, "add", "-A")
+    if add_result.returncode != 0:
+        print(f"git add 失败: {add_result.stderr}")
+        sys.exit(1)
+    commit_result = run_git(project_path, "commit", "-m", "chore: init project by gapfill")
+    if commit_result.returncode != 0:
+        print(f"git commit 失败: {commit_result.stderr}")
+        print("如果文件都已存在，可能无需提交")
 
     print(f"\n本地初始化完成: {project_path}")
 

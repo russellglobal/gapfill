@@ -1,11 +1,26 @@
 """Utility functions."""
 
 import json
-import os
 import platform
 import shutil
 import subprocess
+import sys
 from pathlib import Path
+
+
+_ENCODING_FIXED = False
+
+
+def fix_windows_encoding():
+    """Fix Chinese console encoding on Windows. Safe to call multiple times."""
+    global _ENCODING_FIXED
+    if sys.platform == "win32" and not _ENCODING_FIXED:
+        import io
+        import sys as _sys
+
+        _sys.stdout = io.TextIOWrapper(_sys.stdout.buffer, encoding="utf-8", errors="replace")
+        _sys.stderr = io.TextIOWrapper(_sys.stderr.buffer, encoding="utf-8", errors="replace")
+        _ENCODING_FIXED = True
 
 
 def detect_git():

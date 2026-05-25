@@ -46,17 +46,16 @@ def init_command(args):
     _create_readme(project_path, project_path.name)
     _create_settings(project_path)
 
-    # 4. Generate CLAUDE.md if --stack specified
-    if getattr(args, "stack", None):
-        lang = getattr(args, "lang", "en")
-        _create_claude_md(project_path, args.stack, lang)
-
-    # 5. Generate env-info.txt
-    lang = getattr(args, "lang", "en")
-    _create_env_info(project_path, lang)
-
-    # 6. Initial commit (only for empty repos)
-    _do_commit(project_path)
+    # 4. Initial commit
+    print("首次 git commit...")
+    add_result = run_git(project_path, "add", "-A")
+    if add_result.returncode != 0:
+        print(f"git add 失败: {add_result.stderr}")
+        sys.exit(1)
+    commit_result = run_git(project_path, "commit", "-m", "chore: init project by gapfill")
+    if commit_result.returncode != 0:
+        print(f"git commit 失败: {commit_result.stderr}")
+        print("如果文件都已存在，可能无需提交")
 
     print(f"\n本地初始化完成: {project_path}")
 
