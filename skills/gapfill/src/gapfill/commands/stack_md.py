@@ -1,13 +1,11 @@
 """stack-md subcommand - Generate tech-stack-specific CLAUDE.md."""
 
-import io
 import sys
 from pathlib import Path
 
-# Fix Chinese encoding for Windows console
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+from gapfill.utils import fix_windows_encoding
+
+fix_windows_encoding()
 
 from gapfill.templates import TEMPLATES_DIR
 
