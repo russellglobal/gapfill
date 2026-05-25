@@ -131,3 +131,36 @@ After the script completes, tell the user:
 3. If suggestions were generated, briefly summarize the key points
 
 **Important**: Never overwrite an existing CLAUDE.md. Always generate `.claude/gapfill-suggestions.md` instead.
+
+## review Subcommand
+
+### Usage
+```bash
+python "{SKILL_DIR}/scripts/review.py" [path]
+```
+
+### Arguments
+- **path**: Project directory (optional, defaults to current directory)
+
+### Examples
+```bash
+# Review current project before commit
+python "{SKILL_DIR}/scripts/review.py" .
+
+# Review a specific project
+python "{SKILL_DIR}/scripts/review.py" ./my-project
+```
+
+### Execution Flow
+1. Check src/ vs skills/src/ copy consistency
+2. Verify all Python imports resolve to existing modules
+3. Scan settings templates for dangerous permissions
+4. Check for stale project names and deprecated references
+5. Print report with errors and warnings
+6. Exit with code 1 if any errors found
+
+### After Execution
+After the script completes:
+1. If no issues: "审查通过，未发现问题 ✓"
+2. If issues found: show categorized report with error/warning counts
+3. Fix any errors before committing
