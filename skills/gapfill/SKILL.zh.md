@@ -129,3 +129,36 @@ python "{SKILL_DIR}/scripts/stack_md.py" ./my-react-app -s react
 3. 如果生成了建议文件，简要总结核心要点
 
 **重要**：永远不要覆盖用户已有的 CLAUDE.md。已有时必须生成 `.claude/gapfill-suggestions.md`。
+
+## review 子命令
+
+### 用法
+```bash
+python "{SKILL_DIR}/scripts/review.py" [path]
+```
+
+### 参数
+- **path**: 项目路径（可选，默认当前目录）
+
+### 示例
+```bash
+# 提交前审查当前项目
+python "{SKILL_DIR}/scripts/review.py" .
+
+# 审查指定项目
+python "{SKILL_DIR}/scripts/review.py" ./my-project
+```
+
+### 执行流程
+1. 检查 src/ 与 skills/src/ 副本一致性
+2. 验证所有 Python 导入是否指向存在的模块
+3. 扫描 settings 模板中的危险权限
+4. 检查过时的项目名和废弃引用
+5. 打印报告（错误 + 警告）
+6. 如有错误，退出码为 1
+
+### 执行后
+脚本执行完成后：
+1. 如无问题：显示"审查通过，未发现问题 ✓"
+2. 如发现问题：显示分类报告，列出错误和警告数量
+3. 在提交前修复所有错误
