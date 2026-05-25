@@ -52,7 +52,7 @@ User ←→ gapfill Skill (dialogue layer, SKILL.md)
 | Version | Features |
 |---------|----------|
 | MVP | `init` (project initialization) |
-| v2 | `sync` (cross-project config sync), `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
+| v2 | `sync` (cross-project config sync, done), `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
 | v3 | `roadmap` (automatic decision logging) |
 | v4 | `capture` (high-value interaction recording) |
 | v5 | `audit` (skill security scanning), `publish` (multi-language README sync & consistency check) |

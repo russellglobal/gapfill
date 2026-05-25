@@ -52,7 +52,7 @@ Claude 会调用 gapfill skill 执行初始化。
 | 版本 | 功能 |
 |------|------|
 | MVP | `init`（项目初始化） |
-| v2 | `sync`（跨项目配置同步）、`perm`（权限管理）、`lang`（语言设置）、`feedback`（一键提报） |
+| v2 | `sync`（跨项目配置同步，已完成）、`perm`（权限管理）、`lang`（语言设置）、`feedback`（一键提报） |
 | v3 | `roadmap`（决策自动沉淀） |
 | v4 | `capture`（高价值交互记录） |
 | v5 | `audit`（Skill 安全扫描）、`publish`（中英发布工作流） |
