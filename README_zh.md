@@ -88,13 +88,14 @@ gapfill init --stack spring-boot --lang zh  # 初始化 + 中文版 CLAUDE.md
 | 版本 | 功能 |
 |------|------|
 | MVP | `init`（项目初始化）、`.gitignore`、`settings.local.json` 权限预置 |
-| v2 | `stack-md`（技术栈感知 CLAUDE.md 生成）**已完成**，`review`（提交前全局审查）**已完成**，`scan`（设置合规扫描）**已完成**，`auto-guard`（Auto Mode 兜底规则） |
+| v2 | `stack-md`（技术栈感知 CLAUDE.md 生成）**已完成**，`review`（提交前全局审查）**已完成**，`scan`（设置合规扫描）**已完成** |
 | v3 | `perm`（权限管理）、`lang`（语言设置）、`feedback`（一键提报） |
 | v4 | `capture`（高价值交互记录） |
 | v5 | `publish`（中英发布工作流） |
 
 ### 暂缓功能
 - `sync` — 跨项目权限对比（已实现，暂停 — 用户基数太小）
+- `auto-guard` — Auto Mode 兜底（不 pursue — 与 init/scan 功能重叠，且与 Anthropic 官方 Auto Mode 演进冲突）
 - `roadmap` — 决策自动沉淀（已被可行性研究流程替代）
 - `audit` — Skill 安全扫描（已被 `scan` 设置合规扫描替代）
 - 团队配置同步 — Anthropic Enterprise Admin 已覆盖
