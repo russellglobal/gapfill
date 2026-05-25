@@ -1,1 +1,1 @@
-"""aidev 子命令包"""
+"""gapfill commands package"""
