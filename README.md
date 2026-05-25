@@ -85,14 +85,13 @@ User ←→ gapfill Skill (dialogue layer)
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md).
-
-## Contributing
-
-Found a bug? Open an [issue](https://github.com/russellglobal/gapfill/issues).
-Want to contribute? Fork the repo and submit a PR.
-
-If gapfill saves you time, a star ⭐ helps others find it too.
+| Version | Features |
+|---------|----------|
+| MVP | `init` (project initialization) |
+| v2 | `sync` (cross-project config sync, done), `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
+| v3 | `roadmap` (automatic decision logging) |
+| v4 | `capture` (high-value interaction recording) |
+| v5 | `audit` (skill security scanning), `publish` (multi-language README sync & consistency check) |
 
 ## License
 
