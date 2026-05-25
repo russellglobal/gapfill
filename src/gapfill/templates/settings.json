@@ -45,6 +45,8 @@
       "Bash(docker info:*)",
       "Bash(docker ps:*)",
       "Bash(docker compose ps:*)",
+      "Write(/**)",
+      "Edit(/**)",
       "Glob(/**)",
       "Grep(/**)"
     ]
