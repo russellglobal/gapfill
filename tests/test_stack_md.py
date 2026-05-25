@@ -1,15 +1,15 @@
-"""Tests for stack-claude-md subcommand."""
+"""Tests for stack-md subcommand."""
 
 import io
 import subprocess
 import sys
 from pathlib import Path
 
-SCRIPT_PATH = Path(__file__).resolve().parent.parent / "scripts" / "stack_claude_md.py"
+SCRIPT_PATH = Path(__file__).resolve().parent.parent / "scripts" / "stack_md.py"
 
 
-def run_stack_claude_md(tmp_path, args=None):
-    """Run stack-claude-md command with UTF-8 encoding fix for Windows."""
+def run_stack_md(tmp_path, args=None):
+    """Run stack-md command with UTF-8 encoding fix for Windows."""
     cmd = [sys.executable, str(SCRIPT_PATH), str(tmp_path)]
     if args:
         cmd.extend(args)
@@ -28,24 +28,24 @@ def run_stack_claude_md(tmp_path, args=None):
 
 class TestStackMdCommand:
     def test_creates_claude_md_with_generic(self, tmp_path):
-        """Test that stack-claude-md creates CLAUDE.md with generic template."""
-        result = run_stack_claude_md(tmp_path, ["--stack", "generic"])
+        """Test that stack-md creates CLAUDE.md with generic template."""
+        result = run_stack_md(tmp_path, ["--stack", "generic"])
         assert result.returncode == 0
         assert (tmp_path / "CLAUDE.md").exists()
         content = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
         assert "Development Principles" in content
 
     def test_creates_spring_boot_template(self, tmp_path):
-        """Test that stack-claude-md creates Spring Boot CLAUDE.md."""
-        result = run_stack_claude_md(tmp_path, ["--stack", "spring-boot"])
+        """Test that stack-md creates Spring Boot CLAUDE.md."""
+        result = run_stack_md(tmp_path, ["--stack", "spring-boot"])
         assert result.returncode == 0
         content = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
         assert "Spring Boot" in content
         assert "Anti-Patterns" in content
 
     def test_creates_react_template(self, tmp_path):
-        """Test that stack-claude-md creates React CLAUDE.md."""
-        result = run_stack_claude_md(tmp_path, ["--stack", "react"])
+        """Test that stack-md creates React CLAUDE.md."""
+        result = run_stack_md(tmp_path, ["--stack", "react"])
         assert result.returncode == 0
         content = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
         assert "React" in content
@@ -55,7 +55,7 @@ class TestStackMdCommand:
         """Test that existing CLAUDE.md generates gapfill-suggestions.md."""
         # Create existing CLAUDE.md
         (tmp_path / "CLAUDE.md").write_text("# Existing\n", encoding="utf-8")
-        result = run_stack_claude_md(tmp_path, ["--stack", "spring-boot"])
+        result = run_stack_md(tmp_path, ["--stack", "spring-boot"])
         assert result.returncode == 0
         assert (tmp_path / "CLAUDE.md").read_text(encoding="utf-8") == "# Existing\n"
         assert (tmp_path / ".claude" / "gapfill-suggestions.md").exists()
@@ -64,13 +64,13 @@ class TestStackMdCommand:
 
     def test_invalid_stack_returns_error(self, tmp_path):
         """Test that invalid stack name returns error."""
-        result = run_stack_claude_md(tmp_path, ["--stack", "invalid"])
+        result = run_stack_md(tmp_path, ["--stack", "invalid"])
         assert result.returncode == 1
         assert "错误" in result.stdout_data
 
     def test_default_stack_is_generic(self, tmp_path):
         """Test that no --stack flag defaults to generic."""
-        result = run_stack_claude_md(tmp_path)
+        result = run_stack_md(tmp_path)
         assert result.returncode == 0
         content = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
         assert "Development Principles" in content
@@ -79,7 +79,7 @@ class TestStackMdCommand:
         """Test that templates do not contain sensitive information."""
         import re
         for stack in ["generic", "spring-boot", "react"]:
-            result = run_stack_claude_md(tmp_path, ["--stack", stack])
+            result = run_stack_md(tmp_path, ["--stack", stack])
             assert result.returncode == 0
             content = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
             # Check for actual sensitive patterns, not just the word "secrets"

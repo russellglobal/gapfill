@@ -93,3 +93,41 @@ After the script completes:
 3. Output the updated `settings.local.json` content (do NOT write to files automatically)
 
 **Important**: Always ask for user confirmation before generating any file changes. Never auto-modify `settings.local.json`.
+
+## stack-md Subcommand
+
+### Usage
+```bash
+python "{SKILL_DIR}/scripts/stack_md.py" [path] [--stack name]
+```
+
+### Arguments
+- **path**: Project directory (optional, defaults to current directory)
+- **--stack, -s**: Tech stack name: `generic` (default), `spring-boot`, `react`
+
+### Examples
+```bash
+# Create generic CLAUDE.md in current directory
+python "{SKILL_DIR}/scripts/stack_md.py" .
+
+# Create Spring Boot CLAUDE.md for a specific project
+python "{SKILL_DIR}/scripts/stack_md.py" ./my-spring-project --stack spring-boot
+
+# Create React CLAUDE.md
+python "{SKILL_DIR}/scripts/stack_md.py" ./my-react-app -s react
+```
+
+### Execution Flow
+1. Validate tech stack name
+2. Load pre-defined template
+3. Replace `{{project_name}}` placeholder
+4. If `CLAUDE.md` does not exist: create it with template content
+5. If `CLAUDE.md` already exists: write suggestions to `.claude/gapfill-suggestions.md` (never overwrite)
+
+### After Execution
+After the script completes, tell the user:
+1. Whether CLAUDE.md was created or if suggestions were generated
+2. The line count of the created file
+3. If suggestions were generated, briefly summarize the key points
+
+**Important**: Never overwrite an existing CLAUDE.md. Always generate `.claude/gapfill-suggestions.md` instead.

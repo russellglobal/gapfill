@@ -17,7 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Entity classes go in `entity/` package, DTOs in `dto/` package; never expose Entity in API responses
 - Use constructor injection (`@RequiredArgsConstructor` + `private final` fields); never use `@Autowired` field injection
 - Unified exception handling via `@RestControllerAdvice` with custom exception classes
-- Keep tests co-located with source classes
+- Use named exports for shared modules; keep tests co-located with components
 - Follow RESTful API design principles
 
 ## Build Commands

@@ -17,8 +17,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Branch Workflow
 
-（适用于使用托管平台的项目）
-
 - `main` is protected; do not push directly
 - Develop all new features on `feature/<name>` branches
 - Merge to `main` via pull request after tests pass
