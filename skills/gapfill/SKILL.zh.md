@@ -102,3 +102,41 @@ python "{SKILL_DIR}/scripts/sync.py" /path/to/projects --base my-project
 3. 输出更新后的 `settings.local.json` 内容（不要自动写入文件）
 
 **重要**：生成任何文件变更前必须询问用户确认。永远不要自动修改 `settings.local.json`。
+
+## stack-md 子命令
+
+### 用法
+```bash
+python "{SKILL_DIR}/scripts/stack_md.py" [path] [--stack 名称]
+```
+
+### 参数
+- **path**: 项目路径（可选，默认当前目录）
+- **--stack, -s**: 技术栈名称：`generic`（默认）、`spring-boot`、`react`
+
+### 示例
+```bash
+# 在当前目录创建通用 CLAUDE.md
+python "{SKILL_DIR}/scripts/stack_md.py" .
+
+# 为指定项目创建 Spring Boot CLAUDE.md
+python "{SKILL_DIR}/scripts/stack_md.py" ./my-spring-project --stack spring-boot
+
+# 创建 React CLAUDE.md
+python "{SKILL_DIR}/scripts/stack_md.py" ./my-react-app -s react
+```
+
+### 执行流程
+1. 验证技术栈名称
+2. 加载预定义模板
+3. 替换 `{{project_name}}` 占位符
+4. 如果 `CLAUDE.md` 不存在：创建并写入模板内容
+5. 如果 `CLAUDE.md` 已存在：生成建议到 `.claude/gapfill-suggestions.md`（绝不覆盖）
+
+### 执行后
+脚本执行完成后，告知用户：
+1. CLAUDE.md 是否已创建，或是否生成了建议文件
+2. 创建文件的行数
+3. 如果生成了建议文件，简要总结核心要点
+
+**重要**：永远不要覆盖用户已有的 CLAUDE.md。已有时必须生成 `.claude/gapfill-suggestions.md`。
