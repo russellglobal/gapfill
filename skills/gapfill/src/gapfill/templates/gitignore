@@ -30,7 +30,8 @@ target/
 *.class
 
 # Claude Code
-.claude/settings.local.json
+# .claude/ contains project-specific config; settings.local.json is committed
+# as part of gapfill init (permission presets)
 
 # 缓存和测试
 .pytest_cache/
