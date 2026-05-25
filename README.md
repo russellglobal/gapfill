@@ -88,7 +88,7 @@ User ←→ gapfill Skill (dialogue layer)
 | Version | Features |
 |---------|----------|
 | MVP | `init` (project initialization), `.gitignore`, `settings.local.json` preset |
-| v2 | `stack-md` (tech-stack-aware CLAUDE.md generation) **DONE**, `scan` (settings compliance audit), `auto-guard` (Auto Mode fallback rules) |
+| v2 | `stack-md` (tech-stack-aware CLAUDE.md generation) **DONE**, `review` (pre-commit health check) **DONE**, `scan` (settings compliance audit), `auto-guard` (Auto Mode fallback rules) |
 | v3 | `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
 | v4 | `capture` (high-value interaction recording) |
 | v5 | `publish` (multi-language README sync & consistency check) |
