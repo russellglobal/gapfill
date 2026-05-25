@@ -9,17 +9,22 @@ from gapfill.utils import fix_windows_encoding
 
 fix_windows_encoding()
 
-DANGEROUS_PERMISSIONS = [
+HIGH_RISK_PERMISSIONS = [
     "Write(/**)",
     "Edit(/**)",
     "Bash(curl:*)",
     "Bash(wget:*)",
     "WebFetch(domain:*)",
+]
+
+LOW_RISK_PERMISSIONS = [
     "Bash(find:*)",
     "Bash(npx:*)",
     "Bash(node:*)",
     "Bash(python:*)",
     "Bash(python3:*)",
+    "Bash(pip install:*)",
+    "Bash(npm install:*)",
 ]
 
 STALE_PATTERNS = [
@@ -168,7 +173,7 @@ def check_permissions(project_path):
         return issues
 
     content = settings_file.read_text(encoding="utf-8")
-    for perm in DANGEROUS_PERMISSIONS:
+    for perm in HIGH_RISK_PERMISSIONS:
         if perm in content:
             issues.append(Issue(
                 "error",
