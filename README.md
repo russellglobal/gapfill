@@ -52,13 +52,14 @@ User ←→ gapfill Skill (dialogue layer, SKILL.md)
 | Version | Features |
 |---------|----------|
 | MVP | `init` (project initialization), `.gitignore`, `settings.local.json` preset |
-| v2 | `stack-md` (tech-stack-aware CLAUDE.md generation) **DONE**, `review` (pre-commit health check) **DONE**, `scan` (settings compliance audit) **DONE**, `auto-guard` (Auto Mode fallback rules) |
+| v2 | `stack-md` (tech-stack-aware CLAUDE.md) **DONE**, `review` (pre-commit health check) **DONE**, `scan` (settings compliance audit) **DONE** |
 | v3 | `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
 | v4 | `capture` (high-value interaction recording) |
 | v5 | `publish` (multi-language README sync & consistency check) |
 
 ### Deprioritized
 - `sync` — cross-project config comparison (built, paused — user base too small currently)
+- `auto-guard` — Auto Mode fallback (rejected — overlaps with init/scan, competes with Anthropic's official Auto Mode evolution)
 - `roadmap` — automatic decision logging (replaced by feasibility research process)
 - `audit` — skill security scanning (replaced by `scan` for settings compliance)
 - Team config sync — Anthropic Enterprise Admin covers this
