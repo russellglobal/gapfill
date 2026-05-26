@@ -53,8 +53,8 @@ Claude 会调用 gapfill skill 执行初始化。
 |------|------|
 | MVP | `init`（项目初始化）、`.gitignore`、`settings.local.json` 权限预置 |
 | v2 | `stack-md`（技术栈感知 CLAUDE.md 生成）**已完成**，`review`（提交前全局审查）**已完成**，`scan`（设置合规扫描）**已完成** |
-| v3 | `publish`（多语言文档同步与一致性检查）—— 合并 `lang` |
-| v4 | _待定_ |
+| v3 | _待定_ — 优先验证 review/scan 的实际使用 |
+| v4 | _待定_ — `publish`（多语言文档同步）延期 |
 | v5 | _待定_ |
 
 ### 暂缓功能
@@ -64,6 +64,7 @@ Claude 会调用 gapfill skill 执行初始化。
 - `feedback` — `gh issue create` 已覆盖
 - `lang` — 合并到 `publish`
 - `capture` — 概念有价值但边界不清，待真实用户反馈再审视
+- `publish` — 延期到 v4+；有价值但不紧急，等用户群国际化后再做
 - `roadmap` — 决策自动沉淀（已被可行性研究流程替代）
 - `audit` — Skill 安全扫描（已被 `scan` 设置合规扫描替代）
 - 团队配置同步 — Anthropic Enterprise Admin 已覆盖
