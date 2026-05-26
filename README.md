@@ -53,13 +53,17 @@ User ←→ gapfill Skill (dialogue layer, SKILL.md)
 |---------|----------|
 | MVP | `init` (project initialization), `.gitignore`, `settings.local.json` preset |
 | v2 | `stack-md` (tech-stack-aware CLAUDE.md) **DONE**, `review` (pre-commit health check) **DONE**, `scan` (settings compliance audit) **DONE** |
-| v3 | `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
-| v4 | `capture` (high-value interaction recording) |
-| v5 | `publish` (multi-language README sync & consistency check) |
+| v3 | `publish` (multi-language doc sync & consistency check) — merged with `lang` |
+| v4 | _TBD_ |
+| v5 | _TBD_ |
 
 ### Deprioritized
 - `sync` — cross-project config comparison (built, paused — user base too small currently)
 - `auto-guard` — Auto Mode fallback (rejected — overlaps with init/scan, competes with Anthropic's official Auto Mode evolution)
+- `perm` — JSON editing doesn't need CLI wrapper (scan is sufficient)
+- `feedback` — `gh issue create` already covers this
+- `lang` — merged into `publish`
+- `capture` — concept valuable but scope unclear; revisit with real user feedback
 - `roadmap` — automatic decision logging (replaced by feasibility research process)
 - `audit` — skill security scanning (replaced by `scan` for settings compliance)
 - Team config sync — Anthropic Enterprise Admin covers this
