@@ -2,6 +2,10 @@
 
 **告别 Claude Code 的反复确认。一键初始化项目权限、文档和 git 骨架。**
 
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-Apache_2.0-green.svg)](LICENSE)
+[![零依赖](https://img.shields.io/badge/dependencies-0-lightgrey.svg)]()
+
 [English](README.md) · [中文](README_zh.md)
 
 ## 为什么需要它
@@ -116,6 +120,8 @@ gapfill sync
 
 发现问题？提一个 [issue](https://github.com/russellglobal/gapfill/issues)。
 想贡献代码？Fork 仓库后提交 PR。
+
+如果觉得 gapfill 有用，一颗 ⭐ 能帮更多人找到它。
 
 ## 许可证
 
