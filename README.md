@@ -44,7 +44,7 @@ Requires **Python 3.8+** and **git**. That's it.
 | Manually click "Allow" for every command | Pre-configured permissions reduce confirmations by ~80% |
 | Copy `settings.local.json` from old projects | One `gapfill init` creates safe defaults |
 | Write CLAUDE.md from scratch | `gapfill init --stack spring-boot` creates it during init, or `gapfill stack-claude-md` for existing projects |
-| Commit without checking for issues | `gapfill review` catches dead imports, stale content, permission drift |
+| Commit without checking for issues | `gapfill review` runs 7 pre-commit checks in seconds |
 | Manually audit 10 projects for dangerous permissions | `gapfill scan` audits all projects in seconds |
 
 ## Subcommands
@@ -87,7 +87,19 @@ Pre-defined templates — no LLM calls. Never overwrites existing CLAUDE.md.
 gapfill review
 ```
 
-Checks: copy consistency, dead imports, dangerous permissions in templates, stale project names. Exits with code 1 if errors found.
+Runs 7 checks (zero tokens consumed):
+
+| Check | What it catches |
+|-------|-----------------|
+| 副本一致性 | Files out of sync between src/ and skills/src/ |
+| 死引用 | Import from a module that doesn't exist |
+| 危险权限 | `Write(/**)`, `Bash(curl:*)` in settings template |
+| 过期内容 | Stale project names left in code |
+| JSON 语法 | Broken JSON in any *.json file |
+| 脚本语法 | Syntax errors in scripts/*.py |
+| 敏感文件忽略 | .gitignore missing common secret filenames |
+
+Exits with code 1 if errors found.
 
 ### `scan` — Permission Audit
 
