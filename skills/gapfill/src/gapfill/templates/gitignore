@@ -21,6 +21,15 @@ venv/
 .env.*
 !.env.example
 
+# Security
+*.key
+*.pem
+*.crt
+credentials.json
+secrets.json
+*.id_rsa
+*.id_ed25519
+
 # Node
 node_modules/
 npm-debug.log*

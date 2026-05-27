@@ -1,61 +1,148 @@
 # gapfill
 
-AI-assisted development toolkit — Bootstrap new projects with Claude Code permissions, docs, and git skeleton in one command.
+**Stop clicking "Allow" on Claude Code. Bootstrap projects with the right permissions, docs, and git skeleton in one command.**
+
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-Apache_2.0-green.svg)](LICENSE)
+[![Zero deps](https://img.shields.io/badge/dependencies-0-lightgrey.svg)]()
+[![Zero tokens](https://img.shields.io/badge/token_cost-0-purple.svg)]()
 
 [English](README.md) · [中文](README_zh.md)
 
-## Installation
+## The Problem
 
-Copy the `skills/gapfill/` directory to your Claude Code skills directory:
+Claude Code is powerful, but starting a new project means:
+
+- 🔁 **Clicking "Allow"** on every `git status`, `npm install`, `pip show`
+- 📋 **Copying `settings.local.json`** from old projects and hoping it works
+- 📄 **Writing CLAUDE.md from scratch** with no template to start from
+- 🔍 **Never knowing** if your permissions contain dangerous rules like `Write(/**)`
+
+Gapfill solves all four in seconds — zero LLM calls, zero dependencies, just Python. Every operation runs locally and deterministically — **no tokens consumed** during init, review, or scan. A new project takes about 15 minutes of manual setup; gapfill does it in one command.
+
+## Quick Start
 
 ```bash
-cp -r skills/gapfill ~/.claude/skills/gapfill
+# 1. Clone
+git clone https://github.com/russellglobal/gapfill.git
+
+# 2. Install skill
+cp -r gapfill/skills/gapfill ~/.claude/skills/gapfill
+
+# 3. Use it
+cd your-project
+gapfill init
 ```
 
-Requires **Python 3.8+** and **git**. Zero external dependencies.
+Requires **Python 3.8+** and **git**. That's it.
 
-## Usage
+## What It Does
 
-After installation, tell Claude Code:
+| Before | After |
+|--------|-------|
+| Run `git init` manually | `gapfill init` sets up repo, config, and auto-commits for empty repos (or skips for existing projects) |
+| Manually click "Allow" for every command | Pre-configured permissions reduce confirmations by ~80% |
+| Copy `settings.local.json` from old projects | One `gapfill init` creates safe defaults |
+| Write CLAUDE.md from scratch | `gapfill init --stack spring-boot` creates it during init, or `gapfill stack-claude-md` for existing projects |
+| Commit without checking for issues | `gapfill review` runs 7 pre-commit checks in seconds |
+| Manually audit 10 projects for dangerous permissions | `gapfill scan` audits all projects in seconds |
 
-> "Initialize a new project"
+## Subcommands
 
-Or:
+### `init` — Project Bootstrap
 
-> "Create a project in ./my-project"
+**Use when:** Starting a new project.
 
-Claude will invoke the gapfill skill to run initialization.
+```
+gapfill init                           # basic init
+gapfill init ./my-project              # init in specific dir
+gapfill init --stack spring-boot       # init + CLAUDE.md in one step
+gapfill init --stack spring-boot --lang zh  # init + Chinese CLAUDE.md
+```
 
-## What `init` Does
+Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`.
+Auto-detects git and SSH key status.
+With `--stack`, also generates a tech-stack-specific CLAUDE.md.
 
-1. **Environment check** — Detects git, SSH key availability
-2. **Git init** — Initializes `.git` if the directory has no repo
-3. **Scaffold files** — `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`
-4. **Permission preset** — Pre-configures basic + low-risk permissions to reduce AI interaction rounds
-5. **Environment probe** — Records available tools and versions
-6. **Initial commit** — Auto-commits all scaffolded files
+**Commit behavior:** Auto-commits only for empty repos (no existing commits). If the project already has a git history, files are created but you commit manually — no surprises.
+
+### `stack-claude-md` — CLAUDE.md Generator
+
+**Use when:** An existing project needs a CLAUDE.md. (For new projects, use `gapfill init --stack`.)
+
+```
+gapfill stack-claude-md                  # generic template
+gapfill stack-claude-md --stack spring-boot  # Spring Boot 3.x
+gapfill stack-claude-md --stack react        # React 19 + TypeScript
+gapfill stack-claude-md --stack spring-boot --lang zh  # Chinese version
+```
+
+Pre-defined templates — no LLM calls. Never overwrites existing CLAUDE.md.
+
+### `review` — Pre-Commit Check
+
+**Use when:** Before `git commit`, catch issues from recent changes.
+
+```
+gapfill review
+```
+
+Runs 7 checks (zero tokens consumed):
+
+| Check | What it catches |
+|-------|-----------------|
+| 副本一致性 | Files out of sync between src/ and skills/src/ |
+| 死引用 | Import from a module that doesn't exist |
+| 危险权限 | `Write(/**)`, `Bash(curl:*)` in settings template |
+| 过期内容 | Stale project names left in code |
+| JSON 语法 | Broken JSON in any *.json file |
+| 脚本语法 | Syntax errors in scripts/*.py |
+| 敏感文件忽略 | .gitignore missing common secret filenames |
+
+Exits with code 1 if errors found.
+
+### `scan` — Permission Audit
+
+**Use when:** Auditing a directory of projects for dangerous permissions.
+
+```
+gapfill scan /path/to/projects
+```
+
+Scans all `settings.local.json` files and flags high-risk (`Write(/**)`, `Bash(curl:*)`) and low-risk (`Bash(find:*)`, `Bash(python:*)`) permissions.
+
+### `sync` — Permission Comparison
+
+**Use when:** You have multiple projects with different permission rules.
+
+```
+gapfill sync
+```
+
+Shows differences and suggests a merged configuration. Report-only.
 
 ## Architecture
 
 ```
-User ←→ gapfill Skill (dialogue layer, SKILL.md)
+User ←→ gapfill Skill (dialogue layer)
                 ↓ invokes
-        Internal Python scripts (execution layer, scripts/init.py)
+        Python scripts (execution layer, zero tokens)
 ```
 
-- **Skill is the user interface**: handles dialogue, review, exceptions
-- **Scripts are the execution engine**: guarantees speed and determinism, consumes zero tokens
-- **Not published to PyPI**: distributed alongside the skill
+- **Skill is the UI**: handles conversation, review, exceptions
+- **Scripts are the engine**: fast, deterministic, consumes no tokens
+- **Not on PyPI**: distributed with the skill, always in sync
 
 ## Roadmap
 
-| Version | Features |
-|---------|----------|
-| MVP | `init` (project initialization) |
-| v2 | `sync` (cross-project config sync), `perm` (permission management), `lang` (language settings), `feedback` (one-click feedback) |
-| v3 | `roadmap` (automatic decision logging) |
-| v4 | `capture` (high-value interaction recording) |
-| v5 | `audit` (skill security scanning), `publish` (multi-language README sync & consistency check) |
+See [ROADMAP.md](ROADMAP.md).
+
+## Contributing
+
+Found a bug? Open an [issue](https://github.com/russellglobal/gapfill/issues).
+Want to contribute? Fork the repo and submit a PR.
+
+If gapfill saves you time, a star ⭐ helps others find it too.
 
 ## License
 
@@ -64,5 +151,4 @@ Apache 2.0
 ---
 
 For Chinese documentation, see [README_zh.md](README_zh.md).
-
 For terminology glossary, see [docs/glossary.md](docs/glossary.md).
