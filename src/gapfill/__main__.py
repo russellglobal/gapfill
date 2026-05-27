@@ -24,6 +24,7 @@ def main():
     init_parser = subparsers.add_parser("init", help="初始化新项目")
     init_parser.add_argument("path", nargs="?", default=".", help="项目路径（默认当前目录）")
     init_parser.add_argument("--stack", "-s", default=None, help="技术栈名称 (generic/spring-boot/react)")
+    init_parser.add_argument("--lang", "-l", default="en", help="生成文件语言 (en/zh，默认en)")
 
     # sync 子命令
     sync_parser = subparsers.add_parser("sync", help="跨项目权限规则同步")
@@ -33,6 +34,7 @@ def main():
     # stack-claude-md 子命令
     stack_parser = subparsers.add_parser("stack-claude-md", help="生成技术栈专属 CLAUDE.md")
     stack_parser.add_argument("--stack", "-s", default=None, help="技术栈名称 (generic/spring-boot/react)")
+    stack_parser.add_argument("--lang", "-l", default="en", help="生成文件语言 (en/zh，默认en)")
     stack_parser.add_argument("path", nargs="?", default=".", help="项目路径（默认当前目录）")
 
     # review 子命令

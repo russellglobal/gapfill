@@ -5,6 +5,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache_2.0-green.svg)](LICENSE)
 [![Zero deps](https://img.shields.io/badge/dependencies-0-lightgrey.svg)]()
+[![Zero tokens](https://img.shields.io/badge/token_cost-0-purple.svg)]()
 
 [English](README.md) · [中文](README_zh.md)
 
@@ -17,7 +18,7 @@ Claude Code is powerful, but starting a new project means:
 - 📄 **Writing CLAUDE.md from scratch** with no template to start from
 - 🔍 **Never knowing** if your permissions contain dangerous rules like `Write(/**)`
 
-Gapfill solves all four in seconds — zero LLM calls, zero dependencies, just Python.
+Gapfill solves all four in seconds — zero LLM calls, zero dependencies, just Python. Every operation runs locally and deterministically — **no tokens consumed** during init, review, or scan.
 
 ## Quick Start
 
@@ -56,6 +57,7 @@ Requires **Python 3.8+** and **git**. That's it.
 gapfill init                           # basic init
 gapfill init ./my-project              # init in specific dir
 gapfill init --stack spring-boot       # init + CLAUDE.md in one step
+gapfill init --stack spring-boot --lang zh  # init + Chinese CLAUDE.md
 ```
 
 Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt` and commits them.
@@ -70,6 +72,7 @@ With `--stack`, also generates a tech-stack-specific CLAUDE.md.
 gapfill stack-claude-md                  # generic template
 gapfill stack-claude-md --stack spring-boot  # Spring Boot 3.x
 gapfill stack-claude-md --stack react        # React 19 + TypeScript
+gapfill stack-claude-md --stack spring-boot --lang zh  # Chinese version
 ```
 
 Pre-defined templates — no LLM calls. Never overwrites existing CLAUDE.md.
