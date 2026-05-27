@@ -38,31 +38,32 @@ gapfill init
 
 ## 它做了什么
 
-| 手动操作 | 用 gapfill |
-|---------|-----------|
-| 手动 `git init` | `gapfill init` 一次完成仓库初始化、配置，空仓库自动提交 |
-| 每个命令都要点"允许" | 预置权限，确认次数减少约 80% |
-| 从旧项目拷 `settings.local.json` | `gapfill init` 一键生成安全默认值 |
-| 从零写 CLAUDE.md | `gapfill init --stack spring-boot` 初始化时一步到位，或已有项目用 `gapfill stack-claude-md` |
-| 提交前不检查 | `gapfill review` 7 项预提交检查，几秒跑完 |
-| 手动审计 10 个项目的权限 | `gapfill scan` 几秒钟扫完 |
+安装后，在 Claude Code 中告诉它运行 gapfill 子命令：
+
+```
+gapfill init              # 初始化新项目
+gapfill init ./my-project # 在指定目录初始化
+gapfill stack-md          # 生成技术栈专属 CLAUDE.md
+gapfill review            # 提交前全局审查
+gapfill scan              # 扫描危险权限
+gapfill sync              # 跨项目权限对比
+```
+
+或直接使用 CLI：
+
+```bash
+python scripts/init.py [path]
+python scripts/stack_md.py [path] [--stack name]
+python scripts/review.py [path]
+python scripts/scan.py [path]
+python scripts/sync.py [root] [--base project_name]
+```
+
+**注意**：不要只说"初始化项目"——这可能会触发 Claude Code 的内置逻辑。请明确提到 gapfill 或溜缝儿。
 
 ## 子命令
 
 ### `init` — 项目初始化
-
-**什么时候用：** 从零开始创建新项目。
-
-```
-gapfill init                           # 基础初始化
-gapfill init ./my-project              # 指定目录初始化
-gapfill init --stack spring-boot       # 初始化 + 一步生成 CLAUDE.md
-gapfill init --stack spring-boot --lang zh  # 初始化 + 中文版 CLAUDE.md
-```
-
-创建 `.gitignore`、`README.md`、`settings.local.json`、`env-info.txt`。
-自动检测 git 和 SSH key 状态。
-加上 `--stack` 还会生成技术栈专属 CLAUDE.md。
 
 1. **环境检查** — 检测 git、SSH key 等
 2. **Git 初始化** — 如果目录没有 .git，自动 git init
@@ -70,6 +71,38 @@ gapfill init --stack spring-boot --lang zh  # 初始化 + 中文版 CLAUDE.md
 4. **权限预置** — 基础级 + 低风险级权限，减少 AI 交互轮次
 5. **环境探测** — 自动记录可用工具和版本
 6. **首次提交** — 自动 commit 所有文件
+
+### `stack-md` — 技术栈专属 CLAUDE.md
+
+根据预定义模板生成 CLAUDE.md，不调用 LLM。
+
+| 技术栈 | 说明 |
+|--------|------|
+| `generic`（默认） | 通用项目，含分支工作流程和安全规则 |
+| `spring-boot` | Spring Boot 3.x 约定、反模式、构建命令 |
+| `react` | React 19 + TypeScript 约定、反模式、构建命令 |
+
+如果 CLAUDE.md 已存在，建议写入 `.claude/gapfill-suggestions.md`（绝不覆盖）。
+
+### `review` — 提交前全局审查
+
+扫描项目：
+- 副本一致性（src/ vs skills/src/）
+- 导入有效性（通过 AST 检测死引用）
+- settings 模板中的危险权限
+- 过期内容（旧项目名、废弃引用）
+
+如有错误，退出码为 1。
+
+### `scan` — 设置合规扫描
+
+扫描目录下所有项目的 `settings.local.json`，检查危险权限：
+- **高危**: Write(/**), Edit(/**), Bash(curl:*), Bash(wget:*), WebFetch(domain:*)
+- **低风险**: Bash(find:*), Bash(npx:*), Bash(python:*)
+
+### `sync` — 跨项目权限同步
+
+对比多个项目的权限，建议合并配置。
 
 ## 架构
 
