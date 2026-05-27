@@ -1,104 +1,121 @@
 # gapfill（溜缝儿）
 
-AI 开发者的通用工具箱 —— 为新项目自动初始化 Claude Code 权限、配置和文档骨架，让 AI 助手开箱即用。
+**告别 Claude Code 的反复确认。一键初始化项目权限、文档和 git 骨架。**
 
 [English](README.md) · [中文](README_zh.md)
 
-## 安装
+## 为什么需要它
 
-将 `skills/gapfill/` 目录复制到 Claude Code 的 skills 目录：
+Claude Code 很强大，但开始一个新项目时：
+
+- 🔁 **不停点"允许"**——每次 `git status`、`npm install`、`pip show` 都要确认
+- 📋 **从旧项目复制 `settings.local.json`**，然后祈祷能用
+- 📄 **从零手写 CLAUDE.md**，找不到模板参考
+- 🔍 **永远不知道**自己的权限里有没有 `Write(/**)` 这种危险规则
+
+Gapfill 用几秒钟解决这四个问题——零 LLM 调用、零依赖，只要 Python。
+
+## 30 秒上手
 
 ```bash
-cp -r skills/gapfill ~/.claude/skills/gapfill
+# 1. 克隆
+git clone https://github.com/russellglobal/gapfill.git
+
+# 2. 安装 skill
+cp -r gapfill/skills/gapfill ~/.claude/skills/gapfill
+
+# 3. 使用
+cd your-project
+gapfill init
 ```
 
-需要 **Python 3.8+** 和 **git**。零外部依赖。
+需要 **Python 3.8+** 和 **git**。就这些。
 
-## 使用
+## 它做了什么
 
-安装后，在 Claude Code 中告诉它运行 gapfill 子命令。
+| 手动操作 | 用 gapfill |
+|---------|-----------|
+| 每个命令都要点"允许" | 预置权限，确认次数减少约 80% |
+| 从旧项目拷 `settings.local.json` | `gapfill init` 一键生成安全默认值 |
+| 从零写 CLAUDE.md | `gapfill stack-md` 按技术栈生成模板 |
+| 提交前不检查 | `gapfill review` 发现死引用、过期内容、权限漂移 |
+| 手动审计 10 个项目的权限 | `gapfill scan` 几秒钟扫完 |
 
-**注意**：不要只说"初始化项目"——这可能会触发 Claude Code 的内置逻辑。请明确提到 gapfill 或溜缝儿。
+## 子命令
 
 ### `init` — 项目初始化
 
-**适用场景：** 从零开始创建新项目。
+**什么时候用：** 从零开始创建新项目。
 
-**怎么说：** "用 gapfill 初始化 ./my-project" 或 "gapfill init"
+```
+gapfill init
+gapfill init ./my-project
+```
 
-**做什么：**
-1. 检测 git、SSH key 等
-2. 如果目录没有 .git，自动 git init
-3. 创建文件：.gitignore、README.md、settings.local.json、env-info.txt
-4. 预置基础级 + 低风险级权限，减少 AI 交互轮次
-5. 自动记录可用工具和版本
-6. 自动 commit 所有文件
+创建 `.gitignore`、`README.md`、`settings.local.json`、`env-info.txt` 并自动提交。自动检测 git 和 SSH key 状态。
 
-**约束：** 仅限本地初始化。不创建远程仓库，不做框架专属配置。
+### `stack-md` — CLAUDE.md 生成
 
-### `stack-md` — 技术栈专属 CLAUDE.md
+**什么时候用：** 项目需要 CLAUDE.md 但不想从头写。
 
-**适用场景：** 新项目需要 CLAUDE.md，或想为已有项目补充技术栈相关的约定。
+```
+gapfill stack-md                        # 通用模板
+gapfill stack-md --stack spring-boot    # Spring Boot 3.x
+gapfill stack-md --stack react          # React 19 + TypeScript
+```
 
-**怎么说：** "用 gapfill 创建 Spring Boot 的 CLAUDE.md" 或 "gapfill stack-md --stack spring-boot ./my-project"
+预定义模板——不调用 LLM。绝不覆盖已有的 CLAUDE.md。
 
-| 技术栈 | 适用场景 |
-|--------|----------|
-| `generic`（默认） | 技术栈未知，通用项目 |
-| `spring-boot` | Java + Spring Boot 3.x 项目 |
-| `react` | React 19 + TypeScript 项目 |
+### `review` — 提交前审查
 
-**约束：** 仅使用预定义模板，不调用 LLM。绝不覆盖已有的 CLAUDE.md，而是生成 `.claude/gapfill-suggestions.md` 建议文件。
+**什么时候用：** `git commit` 之前，检查近期改动引入的问题。
 
-### `review` — 提交前全局审查
+```
+gapfill review
+```
 
-**适用场景：** 提交前检查，防止近期改动引入碎片（死引用、副本不一致、残留危险权限等）。
+检查项：副本一致性、死引用、模板中的危险权限、过时的项目名。有错误时退出码为 1。
 
-**怎么说：** "用 gapfill 审查项目" 或 "gapfill review"
+### `scan` — 权限审计
 
-**检查项：**
-- 副本一致性（src/ vs skills/src/）
-- 导入有效性（通过 AST 检测死引用）
-- settings 模板中的危险权限
-- 过期内容（旧项目名、废弃引用）
+**什么时候用：** 审计一个目录下所有项目的 settings.local.json。
 
-**约束：** 只报告，不修改任何文件。
+```
+gapfill scan /path/to/projects
+```
 
-### `scan` — 设置合规扫描
+扫描所有项目的权限配置，标记高危（`Write(/**)`、`Bash(curl:*)`）和低风险（`Bash(find:*)`、`Bash(python:*)`）权限。
 
-**适用场景：** 审计一个目录下所有项目的 settings.local.json 是否有危险权限。
+### `sync` — 权限对比
 
-**怎么说：** "用 gapfill 扫描 /path/to/projects 的权限" 或 "gapfill scan /path/to/projects"
+**什么时候用：** 多个项目的权限规则不一致，想合并统一。
 
-**扫描项：**
-- **高危**: Write(/**), Edit(/**), Bash(curl:*), Bash(wget:*), WebFetch(domain:*)
-- **低风险**: Bash(find:*), Bash(npx:*), Bash(python:*)
+```
+gapfill sync
+```
 
-**约束：** 只报告，不修改任何文件。
-
-### `sync` — 跨项目权限同步
-
-**适用场景：** 你有多个项目，权限规则不一致，想合并一份统一的配置。
-
-**怎么说：** "用 gapfill 同步权限" 或 "gapfill sync"
-
-**约束：** 只报告。建议合并配置，但不自动写入文件。
+展示差异并建议合并配置。只报告，不修改文件。
 
 ## 架构
 
 ```
-用户 ←→ gapfill Skill（对话层，SKILL.md）
+用户 ←→ gapfill Skill（对话层）
                 ↓ 调用
-        内部 Python 脚本（执行层，scripts/init.py）
+        Python 脚本（执行层，不消耗 token）
 ```
 
-- **Skill 是用户界面**：处理对话、审查、异常
-- **脚本是执行引擎**：保证速度和确定性，不消耗 token
-- **不发布 PyPI**：随 skill 一起分发
+- **Skill 是界面**：处理对话、审查、异常
+- **脚本是引擎**：快速、确定、不消耗 token
+- **不在 PyPI**：随 skill 分发，永远同步
 
 ## 开发路线图
 
 请参阅 [ROADMAP_zh.md](ROADMAP_zh.md)。
+
+## 贡献
+
+发现问题？提一个 [issue](https://github.com/russellglobal/gapfill/issues)。
+想贡献代码？Fork 仓库后提交 PR。
 
 ## 许可证
 
@@ -106,4 +123,4 @@ Apache 2.0
 
 ---
 
-术语表请参阅 [docs/glossary.md](docs/glossary.md)
+术语表请参阅 [docs/glossary.md](docs/glossary.md)。
