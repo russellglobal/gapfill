@@ -1,4 +1,4 @@
-"""stack-md subcommand - Generate tech-stack-specific CLAUDE.md."""
+"""stack-claude-md subcommand - Generate tech-stack-specific CLAUDE.md."""
 
 import sys
 from pathlib import Path
@@ -12,8 +12,8 @@ from gapfill.templates import TEMPLATES_DIR
 VALID_STACKS = {"generic", "spring-boot", "react"}
 
 
-def stack_md_command(args):
-    """Execute the stack-md subcommand."""
+def stack_claude_md_command(args):
+    """Execute the stack-claude-md subcommand."""
     project_path = Path(args.path).resolve()
     stack = args.stack or "generic"
 

@@ -39,9 +39,10 @@ gapfill init
 
 | 手动操作 | 用 gapfill |
 |---------|-----------|
+| 手动 `git init` | `gapfill init` 一次完成仓库初始化、配置和提交 |
 | 每个命令都要点"允许" | 预置权限，确认次数减少约 80% |
 | 从旧项目拷 `settings.local.json` | `gapfill init` 一键生成安全默认值 |
-| 从零写 CLAUDE.md | `gapfill stack-md` 按技术栈生成模板 |
+| 从零写 CLAUDE.md | `gapfill init --stack spring-boot` 初始化时一步到位，或已有项目用 `gapfill stack-claude-md` |
 | 提交前不检查 | `gapfill review` 发现死引用、过期内容、权限漂移 |
 | 手动审计 10 个项目的权限 | `gapfill scan` 几秒钟扫完 |
 
@@ -52,20 +53,22 @@ gapfill init
 **什么时候用：** 从零开始创建新项目。
 
 ```
-gapfill init
-gapfill init ./my-project
+gapfill init                           # 基础初始化
+gapfill init ./my-project              # 指定目录初始化
+gapfill init --stack spring-boot       # 初始化 + 一步生成 CLAUDE.md
 ```
 
 创建 `.gitignore`、`README.md`、`settings.local.json`、`env-info.txt` 并自动提交。自动检测 git 和 SSH key 状态。
+加上 `--stack` 还会生成技术栈专属 CLAUDE.md。
 
-### `stack-md` — CLAUDE.md 生成
+### `stack-claude-md` — CLAUDE.md 生成
 
-**什么时候用：** 项目需要 CLAUDE.md 但不想从头写。
+**什么时候用：** 已有项目需要 CLAUDE.md。（新项目直接用 `gapfill init --stack` 一步完成。）
 
 ```
-gapfill stack-md                        # 通用模板
-gapfill stack-md --stack spring-boot    # Spring Boot 3.x
-gapfill stack-md --stack react          # React 19 + TypeScript
+gapfill stack-claude-md                        # 通用模板
+gapfill stack-claude-md --stack spring-boot    # Spring Boot 3.x
+gapfill stack-claude-md --stack react          # React 19 + TypeScript
 ```
 
 预定义模板——不调用 LLM。绝不覆盖已有的 CLAUDE.md。

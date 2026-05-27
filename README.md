@@ -39,9 +39,10 @@ Requires **Python 3.8+** and **git**. That's it.
 
 | Before | After |
 |--------|-------|
+| Run `git init` manually | `gapfill init` sets up repo, config, and commits in one step |
 | Manually click "Allow" for every command | Pre-configured permissions reduce confirmations by ~80% |
 | Copy `settings.local.json` from old projects | One `gapfill init` creates safe defaults |
-| Write CLAUDE.md from scratch | `gapfill stack-md` generates tech-stack-specific templates |
+| Write CLAUDE.md from scratch | `gapfill init --stack spring-boot` creates it during init, or `gapfill stack-claude-md` for existing projects |
 | Commit without checking for issues | `gapfill review` catches dead imports, stale content, permission drift |
 | Manually audit 10 projects for dangerous permissions | `gapfill scan` audits all projects in seconds |
 
@@ -52,20 +53,23 @@ Requires **Python 3.8+** and **git**. That's it.
 **Use when:** Starting a new project.
 
 ```
-gapfill init
-gapfill init ./my-project
+gapfill init                           # basic init
+gapfill init ./my-project              # init in specific dir
+gapfill init --stack spring-boot       # init + CLAUDE.md in one step
 ```
 
-Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt` and commits them. Auto-detects git and SSH key status.
+Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt` and commits them.
+Auto-detects git and SSH key status.
+With `--stack`, also generates a tech-stack-specific CLAUDE.md.
 
-### `stack-md` — CLAUDE.md Generator
+### `stack-claude-md` — CLAUDE.md Generator
 
-**Use when:** Your project needs a CLAUDE.md but you don't want to write it.
+**Use when:** An existing project needs a CLAUDE.md. (For new projects, use `gapfill init --stack`.)
 
 ```
-gapfill stack-md                  # generic template
-gapfill stack-md --stack spring-boot  # Spring Boot 3.x
-gapfill stack-md --stack react        # React 19 + TypeScript
+gapfill stack-claude-md                  # generic template
+gapfill stack-claude-md --stack spring-boot  # Spring Boot 3.x
+gapfill stack-claude-md --stack react        # React 19 + TypeScript
 ```
 
 Pre-defined templates — no LLM calls. Never overwrites existing CLAUDE.md.
