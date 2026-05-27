@@ -17,7 +17,7 @@ cp -r skills/gapfill ~/.claude/skills/gapfill
 
 当用户提到 gapfill 或溜缝儿时调用此技能：
 - "用 gapfill 初始化" / "gapfill init" / "溜缝儿初始化"
-- "gapfill stack-md" / "用 gapfill 生成 CLAUDE.md"
+- "gapfill stack-claude-md" / "用 gapfill 生成 CLAUDE.md"
 - "gapfill review" / "用 gapfill 审查项目"
 - "gapfill scan" / "用 gapfill 扫描权限"
 - "gapfill sync" / "用 gapfill 同步权限"
@@ -103,7 +103,7 @@ python "{SKILL_DIR}/scripts/sync.py" /path/to/projects --base my-project
 
 **重要**：生成任何文件变更前必须询问用户确认。永远不要自动修改 `settings.local.json`。
 
-## stack-md 子命令
+## stack-claude-md 子命令
 
 ### 用法
 ```bash

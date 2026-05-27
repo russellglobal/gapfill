@@ -6,11 +6,11 @@
 
 项目初始化：环境检查、git init、创建文件、权限预置、环境探测、首次提交。
 
-### v2 — stack-md / review / scan
+### v2 — stack-claude-md / review / scan
 
 | 功能 | 说明 |
 |------|------|
-| `stack-md` | 技术栈感知 CLAUDE.md 生成（generic、spring-boot、react） |
+| `stack-claude-md` | 技术栈感知 CLAUDE.md 生成（generic、spring-boot、react） |
 | `review` | 提交前全局审查（副本一致性、导入有效性、危险权限、过期内容） |
 | `scan` | 设置合规扫描（跨项目危险权限检测） |
 

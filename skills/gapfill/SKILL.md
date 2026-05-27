@@ -17,7 +17,7 @@ Requires **Python 3.8+** and **git**. Zero external dependencies.
 
 Invoke this skill when the user mentions gapfill:
 - "gapfill init" / "initialize with gapfill"
-- "gapfill stack-md" / "generate CLAUDE.md with gapfill"
+- "gapfill stack-claude-md" / "generate CLAUDE.md with gapfill"
 - "gapfill review" / "review project with gapfill"
 - "gapfill scan" / "scan permissions with gapfill"
 - "gapfill sync" / "sync permissions with gapfill"
@@ -94,7 +94,7 @@ After the script completes:
 
 **Important**: Always ask for user confirmation before generating any file changes. Never auto-modify `settings.local.json`.
 
-## stack-md Subcommand
+## stack-claude-md Subcommand
 
 ### Usage
 ```bash
