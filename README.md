@@ -38,69 +38,71 @@ Requires **Python 3.8+** and **git**. That's it.
 
 ## What It Does
 
-After installation, tell Claude Code to run a gapfill subcommand:
-
-```
-gapfill init              # Initialize a new project
-gapfill init ./my-project # Initialize in a specific directory
-gapfill stack-md          # Generate CLAUDE.md for your tech stack
-gapfill review            # Pre-commit project health check
-gapfill scan              # Scan settings for dangerous permissions
-gapfill sync              # Cross-project permission comparison
-```
-
-Or use the CLI directly:
-
-```bash
-python scripts/init.py [path]
-python scripts/stack_md.py [path] [--stack name]
-python scripts/review.py [path]
-python scripts/scan.py [path]
-python scripts/sync.py [root] [--base project_name]
-```
-
-## Subcommands
+After installation, tell Claude Code to run a gapfill subcommand.
 
 ### `init` — Project Initialization
 
-1. **Environment check** — Detects git, SSH key availability
-2. **Git init** — Initializes `.git` if the directory has no repo
-3. **Scaffold files** — `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`
-4. **Permission preset** — Pre-configures basic + low-risk permissions to reduce AI interaction rounds
-5. **Environment probe** — Records available tools and versions
-6. **Initial commit** — Auto-commits all scaffolded files
+**When to use:** Starting a new project from scratch.
+
+**Say this:** "gapfill init" or "use gapfill to initialize ./my-project"
+
+**What it does:**
+1. Detects git, SSH key availability
+2. Initializes `.git` if no repo exists
+3. Scaffolds: `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`
+4. Pre-configures basic + low-risk permissions
+5. Records available tools and versions
+6. Auto-commits all scaffolded files
+
+**Constraints:** Local initialization only. No remote repository creation, no framework-specific setup.
 
 ### `stack-md` — Tech-Stack-Aware CLAUDE.md
 
-Generates a CLAUDE.md tailored to your project's tech stack. Pre-defined templates only — no LLM calls.
+**When to use:** A new project needs a CLAUDE.md, or you want stack-specific conventions.
 
-| Stack | Description |
+**Say this:** "gapfill stack-md --stack spring-boot ./my-project"
+
+| Stack | When to use |
 |-------|-------------|
-| `generic` (default) | General project with branch workflow and security rules |
-| `spring-boot` | Spring Boot 3.x conventions, anti-patterns, build commands |
-| `react` | React 19 + TypeScript conventions, anti-patterns, build commands |
+| `generic` (default) | Unknown tech stack, general project |
+| `spring-boot` | Java + Spring Boot 3.x project |
+| `react` | React 19 + TypeScript project |
 
-If CLAUDE.md already exists, suggestions are written to `.claude/gapfill-suggestions.md` (never overwrites).
+**Constraints:** Pre-defined templates only — no LLM calls. Never overwrites existing CLAUDE.md; writes suggestions to `.claude/gapfill-suggestions.md` instead.
 
 ### `review` — Pre-Commit Health Check
 
-Scans the project for:
+**When to use:** Before committing, to catch issues from recent changes (dead imports, copy drift, stale content).
+
+**Say this:** "gapfill review"
+
+**Checks:**
 - Copy consistency (src/ vs skills/src/)
 - Import validity (dead imports via AST)
 - Dangerous permissions in settings templates
 - Stale content (old project names, deprecated refs)
 
-Exits with code 1 if errors found.
+**Constraints:** Report-only. Does not modify any files.
 
 ### `scan` — Settings Compliance Audit
 
-Scans a directory tree for all projects' `settings.local.json` and checks for dangerous permissions:
+**When to use:** Auditing a directory of projects for dangerous permissions.
+
+**Say this:** "gapfill scan /path/to/projects"
+
+**Scans for:**
 - **High risk**: Write(/**), Edit(/**), Bash(curl:*), Bash(wget:*), WebFetch(domain:*)
 - **Low risk**: Bash(find:*), Bash(npx:*), Bash(python:*)
 
+**Constraints:** Report-only. Reads `settings.local.json` but does not modify.
+
 ### `sync` — Cross-Project Permission Sync
 
-Compares permissions across multiple projects and suggests a merged configuration.
+**When to use:** You have multiple projects with different permission rules and want a merged configuration.
+
+**Say this:** "gapfill sync"
+
+**Constraints:** Report-only. Suggests a merged config but does not write to files automatically.
 
 ## Architecture
 
