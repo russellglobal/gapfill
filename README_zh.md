@@ -16,71 +16,73 @@ cp -r skills/gapfill ~/.claude/skills/gapfill
 
 ## 使用
 
-安装后，在 Claude Code 中告诉它运行 gapfill 子命令：
-
-```
-gapfill init              # 初始化新项目
-gapfill init ./my-project # 在指定目录初始化
-gapfill stack-md          # 生成技术栈专属 CLAUDE.md
-gapfill review            # 提交前全局审查
-gapfill scan              # 扫描危险权限
-gapfill sync              # 跨项目权限对比
-```
-
-或直接使用 CLI：
-
-```bash
-python scripts/init.py [path]
-python scripts/stack_md.py [path] [--stack name]
-python scripts/review.py [path]
-python scripts/scan.py [path]
-python scripts/sync.py [root] [--base project_name]
-```
+安装后，在 Claude Code 中告诉它运行 gapfill 子命令。
 
 **注意**：不要只说"初始化项目"——这可能会触发 Claude Code 的内置逻辑。请明确提到 gapfill 或溜缝儿。
 
-## 子命令
-
 ### `init` — 项目初始化
 
-1. **环境检查** — 检测 git、SSH key 等
-2. **Git 初始化** — 如果目录没有 .git，自动 git init
-3. **创建文件** — .gitignore、README.md、settings.local.json、env-info.txt
-4. **权限预置** — 基础级 + 低风险级权限，减少 AI 交互轮次
-5. **环境探测** — 自动记录可用工具和版本
-6. **首次提交** — 自动 commit 所有文件
+**适用场景：** 从零开始创建新项目。
+
+**怎么说：** "用 gapfill 初始化 ./my-project" 或 "gapfill init"
+
+**做什么：**
+1. 检测 git、SSH key 等
+2. 如果目录没有 .git，自动 git init
+3. 创建文件：.gitignore、README.md、settings.local.json、env-info.txt
+4. 预置基础级 + 低风险级权限，减少 AI 交互轮次
+5. 自动记录可用工具和版本
+6. 自动 commit 所有文件
+
+**约束：** 仅限本地初始化。不创建远程仓库，不做框架专属配置。
 
 ### `stack-md` — 技术栈专属 CLAUDE.md
 
-根据预定义模板生成 CLAUDE.md，不调用 LLM。
+**适用场景：** 新项目需要 CLAUDE.md，或想为已有项目补充技术栈相关的约定。
 
-| 技术栈 | 说明 |
-|--------|------|
-| `generic`（默认） | 通用项目，含分支工作流程和安全规则 |
-| `spring-boot` | Spring Boot 3.x 约定、反模式、构建命令 |
-| `react` | React 19 + TypeScript 约定、反模式、构建命令 |
+**怎么说：** "用 gapfill 创建 Spring Boot 的 CLAUDE.md" 或 "gapfill stack-md --stack spring-boot ./my-project"
 
-如果 CLAUDE.md 已存在，建议写入 `.claude/gapfill-suggestions.md`（绝不覆盖）。
+| 技术栈 | 适用场景 |
+|--------|----------|
+| `generic`（默认） | 技术栈未知，通用项目 |
+| `spring-boot` | Java + Spring Boot 3.x 项目 |
+| `react` | React 19 + TypeScript 项目 |
+
+**约束：** 仅使用预定义模板，不调用 LLM。绝不覆盖已有的 CLAUDE.md，而是生成 `.claude/gapfill-suggestions.md` 建议文件。
 
 ### `review` — 提交前全局审查
 
-扫描项目：
+**适用场景：** 提交前检查，防止近期改动引入碎片（死引用、副本不一致、残留危险权限等）。
+
+**怎么说：** "用 gapfill 审查项目" 或 "gapfill review"
+
+**检查项：**
 - 副本一致性（src/ vs skills/src/）
 - 导入有效性（通过 AST 检测死引用）
 - settings 模板中的危险权限
 - 过期内容（旧项目名、废弃引用）
 
-如有错误，退出码为 1。
+**约束：** 只报告，不修改任何文件。
 
 ### `scan` — 设置合规扫描
 
-扫描目录下所有项目的 `settings.local.json`，检查危险权限：
+**适用场景：** 审计一个目录下所有项目的 settings.local.json 是否有危险权限。
+
+**怎么说：** "用 gapfill 扫描 /path/to/projects 的权限" 或 "gapfill scan /path/to/projects"
+
+**扫描项：**
 - **高危**: Write(/**), Edit(/**), Bash(curl:*), Bash(wget:*), WebFetch(domain:*)
 - **低风险**: Bash(find:*), Bash(npx:*), Bash(python:*)
 
+**约束：** 只报告，不修改任何文件。
+
 ### `sync` — 跨项目权限同步
 
-对比多个项目的权限，建议合并配置。
+**适用场景：** 你有多个项目，权限规则不一致，想合并一份统一的配置。
+
+**怎么说：** "用 gapfill 同步权限" 或 "gapfill sync"
+
+**约束：** 只报告。建议合并配置，但不自动写入文件。
 
 ## 架构
 
