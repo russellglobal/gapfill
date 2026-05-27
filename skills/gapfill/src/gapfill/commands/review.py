@@ -1,6 +1,7 @@
 """review subcommand - Pre-commit project health check."""
 
 import ast
+import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -31,6 +32,19 @@ STALE_PATTERNS = [
     "aidev",  # old project name
 ]
 
+SENSITIVE_FILE_PATTERNS = [
+    ".env",
+    "*.key", "*.pem", "*.crt",
+    "credentials.json", "secrets.json",
+    "*.id_rsa", "*.id_ed25519",
+]
+
+ALL_CHECKS = [
+    "副本一致性", "死引用", "危险权限",
+    "过期内容", "JSON 语法", "脚本语法",
+    "敏感文件忽略",
+]
+
 
 @dataclass
 class Issue:
@@ -48,12 +62,42 @@ def review_command(args):
         sys.exit(1)
 
     issues = []
-    issues.extend(check_copy_consistency(project_path))
-    issues.extend(check_imports(project_path))
-    issues.extend(check_permissions(project_path))
-    issues.extend(check_stale_content(project_path))
+    checks_run = []
+    files_scanned = 0
 
-    _print_report(issues)
+    # Run all 7 checks
+    result = check_copy_consistency(project_path)
+    checks_run.append("副本一致性")
+    issues.extend(result)
+
+    result, count = check_imports(project_path)
+    checks_run.append("死引用")
+    issues.extend(result)
+    files_scanned += count
+
+    result = check_permissions(project_path)
+    checks_run.append("危险权限")
+    issues.extend(result)
+
+    result = check_stale_content(project_path)
+    checks_run.append("过期内容")
+    issues.extend(result)
+
+    result, count = check_json_syntax(project_path)
+    checks_run.append("JSON 语法")
+    issues.extend(result)
+    files_scanned += count
+
+    result, count = check_scripts_syntax(project_path)
+    checks_run.append("脚本语法")
+    issues.extend(result)
+    files_scanned += count
+
+    result = check_sensitive_files(project_path)
+    checks_run.append("敏感文件忽略")
+    issues.extend(result)
+
+    _print_report(issues, checks_run, files_scanned)
 
     if any(i.severity == "error" for i in issues):
         sys.exit(1)
@@ -78,7 +122,6 @@ def check_copy_consistency(project_path):
         if f.is_file() and not f.name.endswith(".pyc") and f.parent.name != "__pycache__":
             skills_files.add(f.relative_to(skills_dir))
 
-    # Files only in src/
     for rel_path in sorted(src_files - skills_files):
         issues.append(Issue(
             "error",
@@ -86,7 +129,6 @@ def check_copy_consistency(project_path):
             f"{rel_path} 存在于 src/ 但不存在于 skills/src/"
         ))
 
-    # Files only in skills/
     for rel_path in sorted(skills_files - src_files):
         issues.append(Issue(
             "warning",
@@ -94,7 +136,6 @@ def check_copy_consistency(project_path):
             f"{rel_path} 存在于 skills/src/ 但不存在于 src/"
         ))
 
-    # Content differences
     for rel_path in sorted(src_files & skills_files):
         src_file = src_dir / rel_path
         skills_file = skills_dir / rel_path
@@ -114,9 +155,8 @@ def check_imports(project_path):
     src_dir = project_path / "src" / "gapfill"
 
     if not src_dir.exists():
-        return issues
+        return issues, 0
 
-    # Build a map of available modules
     available = set()
     for f in src_dir.rglob("*.py"):
         if f.name == "__init__.py":
@@ -126,10 +166,11 @@ def check_imports(project_path):
             mod_path = f.relative_to(src_dir.parent).with_suffix("")
             available.add(str(mod_path).replace("/", "."))
 
-    # Check each Python file
+    file_count = 0
     for py_file in src_dir.rglob("*.py"):
         if py_file.parent.name == "__pycache__":
             continue
+        file_count += 1
         try:
             tree = ast.parse(py_file.read_text(encoding="utf-8"))
         except SyntaxError:
@@ -138,9 +179,6 @@ def check_imports(project_path):
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
                 if node.level and node.module and node.module.startswith("gapfill"):
-                    # Convert gapfill.xxx to path
-                    mod_name = node.module.replace(".", "/")
-                    # Check if it exists as a package (dir with __init__.py) or module (.py)
                     found = False
                     for candidate in [
                         src_dir / f"{node.module.replace('.', '/')}.py",
@@ -157,7 +195,7 @@ def check_imports(project_path):
                             f"{rel_file}: 从 '{node.module}' 导入，但模块不存在"
                         ))
 
-    return issues
+    return issues, file_count
 
 
 def check_permissions(project_path):
@@ -195,7 +233,6 @@ def check_stale_content(project_path):
     for py_file in sorted(src_dir.rglob("*.py")):
         if py_file.parent.name == "__pycache__":
             continue
-        # Skip review.py itself - it legitimately contains stale patterns as data
         if py_file.name == "review.py":
             continue
         try:
@@ -214,9 +251,93 @@ def check_stale_content(project_path):
     return issues
 
 
-def _print_report(issues):
+def check_json_syntax(project_path):
+    """Validate all *.json files parse correctly."""
+    issues = []
+    count = 0
+    src_dir = project_path / "src"
+
+    if not src_dir.exists():
+        return issues, count
+
+    for json_file in sorted(src_dir.rglob("*.json")):
+        if json_file.parent.name == "__pycache__":
+            continue
+        count += 1
+        try:
+            json.loads(json_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            rel_file = json_file.relative_to(src_dir.parent)
+            issues.append(Issue(
+                "error",
+                "JSON 语法",
+                f"{rel_file}: {e.msg} (第 {e.lineno} 行)"
+            ))
+
+    return issues, count
+
+
+def check_scripts_syntax(project_path):
+    """Validate scripts/*.py parse without syntax errors."""
+    issues = []
+    count = 0
+    scripts_dir = project_path / "scripts"
+
+    if not scripts_dir.exists():
+        return issues, count
+
+    for py_file in sorted(scripts_dir.glob("*.py")):
+        count += 1
+        try:
+            ast.parse(py_file.read_text(encoding="utf-8"))
+        except SyntaxError as e:
+            rel_file = py_file.relative_to(project_path)
+            issues.append(Issue(
+                "error",
+                "脚本语法",
+                f"{rel_file}: 语法错误 (第 {e.lineno} 行)"
+            ))
+
+    return issues, count
+
+
+def check_sensitive_files(project_path):
+    """Check that sensitive files are covered by .gitignore."""
+    issues = []
+    gitignore = project_path / ".gitignore"
+
+    if not gitignore.exists():
+        return issues
+
+    ignored = _parse_gitignore(gitignore)
+
+    for pattern in SENSITIVE_FILE_PATTERNS:
+        if pattern not in ignored:
+            issues.append(Issue(
+                "warning",
+                "敏感文件忽略",
+                f".gitignore 未忽略常见敏感文件名: {pattern}"
+            ))
+
+    return issues
+
+
+def _parse_gitignore(path):
+    """Parse .gitignore and return set of ignored patterns."""
+    patterns = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            patterns.add(line)
+            # Also add basename
+            if "/" in line:
+                patterns.add(line.lstrip("/"))
+    return patterns
+
+
+def _print_report(issues, checks_run, files_scanned):
     if not issues:
-        print("审查通过，未发现问题 ✓")
+        print(f"审查通过，扫描 {files_scanned} 个文件，{len(checks_run)} 项检查 ✓")
         return
 
     for issue in issues:
@@ -231,3 +352,4 @@ def _print_report(issues):
     if warn_count:
         parts.append(f"{warn_count} 个警告")
     print(f"\n共发现 {len(issues)} 个问题 ({', '.join(parts)})")
+    print(f"已执行 {len(checks_run)} 项检查，扫描 {files_scanned} 个文件")
