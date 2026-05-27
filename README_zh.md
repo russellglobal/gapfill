@@ -44,7 +44,7 @@ gapfill init
 | 每个命令都要点"允许" | 预置权限，确认次数减少约 80% |
 | 从旧项目拷 `settings.local.json` | `gapfill init` 一键生成安全默认值 |
 | 从零写 CLAUDE.md | `gapfill init --stack spring-boot` 初始化时一步到位，或已有项目用 `gapfill stack-claude-md` |
-| 提交前不检查 | `gapfill review` 发现死引用、过期内容、权限漂移 |
+| 提交前不检查 | `gapfill review` 7 项预提交检查，几秒跑完 |
 | 手动审计 10 个项目的权限 | `gapfill scan` 几秒钟扫完 |
 
 ## 子命令
@@ -87,7 +87,19 @@ gapfill stack-claude-md --stack spring-boot --lang zh  # 中文版
 gapfill review
 ```
 
-检查项：副本一致性、死引用、模板中的危险权限、过时的项目名。有错误时退出码为 1。
+运行 7 项检查（零 token 消耗）：
+
+| 检查项 | 能发现的问题 |
+|--------|-------------|
+| 副本一致性 | src/ 和 skills/src/ 文件不同步 |
+| 死引用 | import 了不存在的模块 |
+| 危险权限 | settings 模板包含 `Write(/**)`、`Bash(curl:*)` |
+| 过期内容 | 代码中残留旧项目名 |
+| JSON 语法 | 任意 *.json 文件格式错误 |
+| 脚本语法 | scripts/*.py 有语法错误 |
+| 敏感文件忽略 | .gitignore 未覆盖常见敏感文件名 |
+
+有错误时退出码为 1。
 
 ### `scan` — 权限审计
 
