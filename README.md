@@ -38,31 +38,30 @@ Requires **Python 3.8+** and **git**. That's it.
 
 ## What It Does
 
-| Before | After |
-|--------|-------|
-| Run `git init` manually | `gapfill init` sets up repo, config, and auto-commits for empty repos (or skips for existing projects) |
-| Manually click "Allow" for every command | Pre-configured permissions reduce confirmations by ~80% |
-| Copy `settings.local.json` from old projects | One `gapfill init` creates safe defaults |
-| Write CLAUDE.md from scratch | `gapfill init --stack spring-boot` creates it during init, or `gapfill stack-claude-md` for existing projects |
-| Commit without checking for issues | `gapfill review` runs 7 pre-commit checks in seconds |
-| Manually audit 10 projects for dangerous permissions | `gapfill scan` audits all projects in seconds |
+After installation, tell Claude Code to run a gapfill subcommand:
+
+```
+gapfill init              # Initialize a new project
+gapfill init ./my-project # Initialize in a specific directory
+gapfill stack-md          # Generate CLAUDE.md for your tech stack
+gapfill review            # Pre-commit project health check
+gapfill scan              # Scan settings for dangerous permissions
+gapfill sync              # Cross-project permission comparison
+```
+
+Or use the CLI directly:
+
+```bash
+python scripts/init.py [path]
+python scripts/stack_md.py [path] [--stack name]
+python scripts/review.py [path]
+python scripts/scan.py [path]
+python scripts/sync.py [root] [--base project_name]
+```
 
 ## Subcommands
 
-### `init` — Project Bootstrap
-
-**Use when:** Starting a new project.
-
-```
-gapfill init                           # basic init
-gapfill init ./my-project              # init in specific dir
-gapfill init --stack spring-boot       # init + CLAUDE.md in one step
-gapfill init --stack spring-boot --lang zh  # init + Chinese CLAUDE.md
-```
-
-Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`.
-Auto-detects git and SSH key status.
-With `--stack`, also generates a tech-stack-specific CLAUDE.md.
+### `init` — Project Initialization
 
 1. **Environment check** — Detects git, SSH key availability
 2. **Git init** — Initializes `.git` if the directory has no repo
@@ -70,6 +69,38 @@ With `--stack`, also generates a tech-stack-specific CLAUDE.md.
 4. **Permission preset** — Pre-configures basic + low-risk permissions to reduce AI interaction rounds
 5. **Environment probe** — Records available tools and versions
 6. **Initial commit** — Auto-commits all scaffolded files
+
+### `stack-md` — Tech-Stack-Aware CLAUDE.md
+
+Generates a CLAUDE.md tailored to your project's tech stack. Pre-defined templates only — no LLM calls.
+
+| Stack | Description |
+|-------|-------------|
+| `generic` (default) | General project with branch workflow and security rules |
+| `spring-boot` | Spring Boot 3.x conventions, anti-patterns, build commands |
+| `react` | React 19 + TypeScript conventions, anti-patterns, build commands |
+
+If CLAUDE.md already exists, suggestions are written to `.claude/gapfill-suggestions.md` (never overwrites).
+
+### `review` — Pre-Commit Health Check
+
+Scans the project for:
+- Copy consistency (src/ vs skills/src/)
+- Import validity (dead imports via AST)
+- Dangerous permissions in settings templates
+- Stale content (old project names, deprecated refs)
+
+Exits with code 1 if errors found.
+
+### `scan` — Settings Compliance Audit
+
+Scans a directory tree for all projects' `settings.local.json` and checks for dangerous permissions:
+- **High risk**: Write(/**), Edit(/**), Bash(curl:*), Bash(wget:*), WebFetch(domain:*)
+- **Low risk**: Bash(find:*), Bash(npx:*), Bash(python:*)
+
+### `sync` — Cross-Project Permission Sync
+
+Compares permissions across multiple projects and suggests a merged configuration.
 
 ## Architecture
 
