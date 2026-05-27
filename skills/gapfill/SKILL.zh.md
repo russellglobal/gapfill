@@ -15,12 +15,14 @@ cp -r skills/gapfill ~/.claude/skills/gapfill
 
 ## 触发条件
 
-当用户提到以下任一表述时，调用此技能：
-- "初始化项目" / "新建项目" / "创建项目"
-- "git init" / "创建仓库"
-- "设置 Claude 配置" / "权限配置"
-- "同步权限" / "更新权限"
-- "项目骨架"
+当用户提到 gapfill 或溜缝儿时调用此技能：
+- "用 gapfill 初始化" / "gapfill init" / "溜缝儿初始化"
+- "gapfill stack-md" / "用 gapfill 生成 CLAUDE.md"
+- "gapfill review" / "用 gapfill 审查项目"
+- "gapfill scan" / "用 gapfill 扫描权限"
+- "gapfill sync" / "用 gapfill 同步权限"
+
+**注意**：不要仅因用户说"初始化项目"就触发——这可能是 Claude Code 的内置行为。用户需要明确提到 gapfill 或溜缝儿。
 
 ## init 子命令
 

@@ -16,17 +16,30 @@ Requires **Python 3.8+** and **git**. Zero external dependencies.
 
 ## Usage
 
-After installation, tell Claude Code:
+After installation, tell Claude Code to run a gapfill subcommand:
 
-> "Initialize a new project"
+```
+gapfill init              # Initialize a new project
+gapfill init ./my-project # Initialize in a specific directory
+gapfill stack-md          # Generate CLAUDE.md for your tech stack
+gapfill review            # Pre-commit project health check
+gapfill scan              # Scan settings for dangerous permissions
+gapfill sync              # Cross-project permission comparison
+```
 
-Or:
+Or use the CLI directly:
 
-> "Create a project in ./my-project"
+```bash
+python scripts/init.py [path]
+python scripts/stack_md.py [path] [--stack name]
+python scripts/review.py [path]
+python scripts/scan.py [path]
+python scripts/sync.py [root] [--base project_name]
+```
 
-Claude will invoke the gapfill skill to run initialization.
+## Subcommands
 
-## What `init` Does
+### `init` — Project Initialization
 
 1. **Environment check** — Detects git, SSH key availability
 2. **Git init** — Initializes `.git` if the directory has no repo
@@ -34,6 +47,38 @@ Claude will invoke the gapfill skill to run initialization.
 4. **Permission preset** — Pre-configures basic + low-risk permissions to reduce AI interaction rounds
 5. **Environment probe** — Records available tools and versions
 6. **Initial commit** — Auto-commits all scaffolded files
+
+### `stack-md` — Tech-Stack-Aware CLAUDE.md
+
+Generates a CLAUDE.md tailored to your project's tech stack. Pre-defined templates only — no LLM calls.
+
+| Stack | Description |
+|-------|-------------|
+| `generic` (default) | General project with branch workflow and security rules |
+| `spring-boot` | Spring Boot 3.x conventions, anti-patterns, build commands |
+| `react` | React 19 + TypeScript conventions, anti-patterns, build commands |
+
+If CLAUDE.md already exists, suggestions are written to `.claude/gapfill-suggestions.md` (never overwrites).
+
+### `review` — Pre-Commit Health Check
+
+Scans the project for:
+- Copy consistency (src/ vs skills/src/)
+- Import validity (dead imports via AST)
+- Dangerous permissions in settings templates
+- Stale content (old project names, deprecated refs)
+
+Exits with code 1 if errors found.
+
+### `scan` — Settings Compliance Audit
+
+Scans a directory tree for all projects' `settings.local.json` and checks for dangerous permissions:
+- **High risk**: Write(/**), Edit(/**), Bash(curl:*), Bash(wget:*), WebFetch(domain:*)
+- **Low risk**: Bash(find:*), Bash(npx:*), Bash(python:*)
+
+### `sync` — Cross-Project Permission Sync
+
+Compares permissions across multiple projects and suggests a merged configuration.
 
 ## Architecture
 

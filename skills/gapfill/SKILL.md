@@ -15,12 +15,14 @@ Requires **Python 3.8+** and **git**. Zero external dependencies.
 
 ## Triggers
 
-Invoke this skill when the user mentions any of the following:
-- "initialize project" / "new project" / "create project"
-- "git init" / "create repository"
-- "set up Claude config" / "permission config"
-- "sync permissions" / "update permissions"
-- "project skeleton"
+Invoke this skill when the user mentions gapfill:
+- "gapfill init" / "initialize with gapfill"
+- "gapfill stack-md" / "generate CLAUDE.md with gapfill"
+- "gapfill review" / "review project with gapfill"
+- "gapfill scan" / "scan permissions with gapfill"
+- "gapfill sync" / "sync permissions with gapfill"
+
+**Note**: Do NOT trigger solely based on "initialize project" — this may invoke Claude Code's built-in behavior. The user must explicitly mention gapfill.
 
 ## init Subcommand
 
