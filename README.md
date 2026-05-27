@@ -2,6 +2,10 @@
 
 **Stop clicking "Allow" on Claude Code. Bootstrap projects with the right permissions, docs, and git skeleton in one command.**
 
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-Apache_2.0-green.svg)](LICENSE)
+[![Zero deps](https://img.shields.io/badge/dependencies-0-lightgrey.svg)]()
+
 [English](README.md) · [中文](README_zh.md)
 
 ## The Problem
@@ -116,6 +120,8 @@ See [ROADMAP.md](ROADMAP.md).
 
 Found a bug? Open an [issue](https://github.com/russellglobal/gapfill/issues).
 Want to contribute? Fork the repo and submit a PR.
+
+If gapfill saves you time, a star ⭐ helps others find it too.
 
 ## License
 
