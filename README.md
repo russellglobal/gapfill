@@ -18,7 +18,7 @@ Claude Code is powerful, but starting a new project means:
 - 📄 **Writing CLAUDE.md from scratch** with no template to start from
 - 🔍 **Never knowing** if your permissions contain dangerous rules like `Write(/**)`
 
-Gapfill solves all four in seconds — zero LLM calls, zero dependencies, just Python. Every operation runs locally and deterministically — **no tokens consumed** during init, review, or scan.
+Gapfill solves all four in seconds — zero LLM calls, zero dependencies, just Python. Every operation runs locally and deterministically — **no tokens consumed** during init, review, or scan. A new project takes about 15 minutes of manual setup; gapfill does it in one command.
 
 ## Quick Start
 
@@ -40,7 +40,7 @@ Requires **Python 3.8+** and **git**. That's it.
 
 | Before | After |
 |--------|-------|
-| Run `git init` manually | `gapfill init` sets up repo, config, and commits in one step |
+| Run `git init` manually | `gapfill init` sets up repo, config, and auto-commits for empty repos (or skips for existing projects) |
 | Manually click "Allow" for every command | Pre-configured permissions reduce confirmations by ~80% |
 | Copy `settings.local.json` from old projects | One `gapfill init` creates safe defaults |
 | Write CLAUDE.md from scratch | `gapfill init --stack spring-boot` creates it during init, or `gapfill stack-claude-md` for existing projects |
@@ -60,9 +60,11 @@ gapfill init --stack spring-boot       # init + CLAUDE.md in one step
 gapfill init --stack spring-boot --lang zh  # init + Chinese CLAUDE.md
 ```
 
-Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt` and commits them.
+Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`.
 Auto-detects git and SSH key status.
 With `--stack`, also generates a tech-stack-specific CLAUDE.md.
+
+**Commit behavior:** Auto-commits only for empty repos (no existing commits). If the project already has a git history, files are created but you commit manually — no surprises.
 
 ### `stack-claude-md` — CLAUDE.md Generator
 

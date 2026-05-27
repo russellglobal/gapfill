@@ -55,7 +55,21 @@ def init_command(args):
     lang = getattr(args, "lang", "en")
     _create_env_info(project_path, lang)
 
-    # 5. Initial commit
+    # 6. Initial commit (only for empty repos)
+    _do_commit(project_path)
+
+    print(f"\n本地初始化完成: {project_path}")
+
+
+def _do_commit(project_path):
+    """Commit scaffolded files. Auto-commit only for empty repos (no existing commits)."""
+    has_commits = _has_existing_commits(project_path)
+
+    if has_commits:
+        print("已有 git 提交历史，跳过自动 commit")
+        print("请手动执行: git add -A && git commit -m 'chore: init project by gapfill'")
+        return
+
     print("首次 git commit...")
     add_result = run_git(project_path, "add", "-A")
     if add_result.returncode != 0:
@@ -66,7 +80,14 @@ def init_command(args):
         print(f"git commit 失败: {commit_result.stderr}")
         print("如果文件都已存在，可能无需提交")
 
-    print(f"\n本地初始化完成: {project_path}")
+
+def _has_existing_commits(project_path):
+    """Check if the git repo has any existing commits."""
+    result = run_git(project_path, "rev-list", "--count", "HEAD")
+    if result.returncode != 0:
+        return False  # fresh repo, no commits yet
+    count = int(result.stdout.strip())
+    return count > 0
 
 
 def _do_commit(project_path):

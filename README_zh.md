@@ -18,7 +18,7 @@ Claude Code 很强大，但开始一个新项目时：
 - 📄 **从零手写 CLAUDE.md**，找不到模板参考
 - 🔍 **永远不知道**自己的权限里有没有 `Write(/**)` 这种危险规则
 
-Gapfill 用几秒钟解决这四个问题——零 LLM 调用、零依赖，只要 Python。初始化、审查、扫描全过程本地执行，**不消耗任何 token**。
+Gapfill 用几秒钟解决这四个问题——零 LLM 调用、零依赖，只要 Python。初始化、审查、扫描全过程本地执行，**不消耗任何 token**。每个新项目手动配置大约需要 15 分钟；gapfill 一个命令搞定。
 
 ## 30 秒上手
 
@@ -40,7 +40,7 @@ gapfill init
 
 | 手动操作 | 用 gapfill |
 |---------|-----------|
-| 手动 `git init` | `gapfill init` 一次完成仓库初始化、配置和提交 |
+| 手动 `git init` | `gapfill init` 一次完成仓库初始化、配置，空仓库自动提交 |
 | 每个命令都要点"允许" | 预置权限，确认次数减少约 80% |
 | 从旧项目拷 `settings.local.json` | `gapfill init` 一键生成安全默认值 |
 | 从零写 CLAUDE.md | `gapfill init --stack spring-boot` 初始化时一步到位，或已有项目用 `gapfill stack-claude-md` |
@@ -60,8 +60,11 @@ gapfill init --stack spring-boot       # 初始化 + 一步生成 CLAUDE.md
 gapfill init --stack spring-boot --lang zh  # 初始化 + 中文版 CLAUDE.md
 ```
 
-创建 `.gitignore`、`README.md`、`settings.local.json`、`env-info.txt` 并自动提交。自动检测 git 和 SSH key 状态。
+创建 `.gitignore`、`README.md`、`settings.local.json`、`env-info.txt`。
+自动检测 git 和 SSH key 状态。
 加上 `--stack` 还会生成技术栈专属 CLAUDE.md。
+
+**提交逻辑：** 空仓库（无提交历史）自动 commit；已有提交历史的项目只创建文件，不自动 commit——避免意外修改。
 
 ### `stack-claude-md` — CLAUDE.md 生成
 
