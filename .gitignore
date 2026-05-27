@@ -3,3 +3,15 @@ __pycache__/
 .claude/settings.local.json
 superpowers/
 docs/superpowers/
+
+# Sensitive files
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+credentials.json
+secrets.json
+*.id_rsa
+*.id_ed25519
