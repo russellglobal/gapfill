@@ -45,7 +45,6 @@ def init_command(args):
     _create_gitignore(project_path)
     _create_readme(project_path, project_path.name)
     _create_settings(project_path)
-    _create_env_info(project_path)
 
     # 4. Generate CLAUDE.md if --stack specified
     if getattr(args, "stack", None):
@@ -87,8 +86,11 @@ def _has_existing_commits(project_path):
     result = run_git(project_path, "rev-list", "--count", "HEAD")
     if result.returncode != 0:
         return False  # fresh repo, no commits yet
-    count = int(result.stdout.strip())
-    return count > 0
+    try:
+        count = int(result.stdout.strip())
+        return count > 0
+    except (ValueError, IndexError):
+        return False
 
 
 def _check_env():
@@ -165,6 +167,6 @@ def _create_claude_md(project_path, stack, lang="en"):
         print(f"警告: 不支持的语言 '{lang}'，使用默认英文")
         lang = "en"
     template_name = f"claude-{stack}" if lang == "en" else f"claude-{stack}-{lang}"
-    template = _read_template(template_name)
+    template = _read_template(f"{template_name}.md")
     content = template.replace("{{project_name}}", project_path.name)
     _write_file(project_path / "CLAUDE.md", content)
