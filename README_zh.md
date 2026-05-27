@@ -2,11 +2,6 @@
 
 **告别 Claude Code 的反复确认。一键初始化项目权限、文档和 git 骨架。**
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-Apache_2.0-green.svg)](LICENSE)
-[![零依赖](https://img.shields.io/badge/dependencies-0-lightgrey.svg)]()
-[![零 token](https://img.shields.io/badge/token_消耗-0-purple.svg)]()
-
 [English](README.md) · [中文](README_zh.md)
 
 ## 为什么需要它
@@ -18,7 +13,7 @@ Claude Code 很强大，但开始一个新项目时：
 - 📄 **从零手写 CLAUDE.md**，找不到模板参考
 - 🔍 **永远不知道**自己的权限里有没有 `Write(/**)` 这种危险规则
 
-Gapfill 用几秒钟解决这四个问题——零 LLM 调用、零依赖，只要 Python。初始化、审查、扫描全过程本地执行，**不消耗任何 token**。每个新项目手动配置大约需要 15 分钟；gapfill 一个命令搞定。
+Gapfill 用几秒钟解决这四个问题——零 LLM 调用、零依赖，只要 Python。
 
 ## 30 秒上手
 
@@ -38,73 +33,68 @@ gapfill init
 
 ## 它做了什么
 
-安装后，在 Claude Code 中告诉它运行 gapfill 子命令。
+| 手动操作 | 用 gapfill |
+|---------|-----------|
+| 每个命令都要点"允许" | 预置权限，确认次数减少约 80% |
+| 从旧项目拷 `settings.local.json` | `gapfill init` 一键生成安全默认值 |
+| 从零写 CLAUDE.md | `gapfill stack-md` 按技术栈生成模板 |
+| 提交前不检查 | `gapfill review` 发现死引用、过期内容、权限漂移 |
+| 手动审计 10 个项目的权限 | `gapfill scan` 几秒钟扫完 |
 
-**注意**：不要只说"初始化项目"——这可能会触发 Claude Code 的内置逻辑。请明确提到 gapfill 或溜缝儿。
+## 子命令
 
 ### `init` — 项目初始化
 
-**适用场景：** 从零开始创建新项目。
+**什么时候用：** 从零开始创建新项目。
 
-**怎么说：** "用 gapfill 初始化 ./my-project" 或 "gapfill init"
+```
+gapfill init
+gapfill init ./my-project
+```
 
-**做什么：**
-1. 检测 git、SSH key 等
-2. 如果目录没有 .git，自动 git init
-3. 创建文件：.gitignore、README.md、settings.local.json、env-info.txt
-4. 预置基础级 + 低风险级权限，减少 AI 交互轮次
-5. 自动记录可用工具和版本
-6. 自动 commit 所有文件
+创建 `.gitignore`、`README.md`、`settings.local.json`、`env-info.txt` 并自动提交。自动检测 git 和 SSH key 状态。
 
-**约束：** 仅限本地初始化。不创建远程仓库，不做框架专属配置。
+### `stack-md` — CLAUDE.md 生成
 
-### `stack-md` — 技术栈专属 CLAUDE.md
+**什么时候用：** 项目需要 CLAUDE.md 但不想从头写。
 
-**适用场景：** 新项目需要 CLAUDE.md，或想为已有项目补充技术栈相关的约定。
+```
+gapfill stack-md                        # 通用模板
+gapfill stack-md --stack spring-boot    # Spring Boot 3.x
+gapfill stack-md --stack react          # React 19 + TypeScript
+```
 
-**怎么说：** "用 gapfill 创建 Spring Boot 的 CLAUDE.md" 或 "gapfill stack-md --stack spring-boot ./my-project"
+预定义模板——不调用 LLM。绝不覆盖已有的 CLAUDE.md。
 
-| 技术栈 | 适用场景 |
-|--------|----------|
-| `generic`（默认） | 技术栈未知，通用项目 |
-| `spring-boot` | Java + Spring Boot 3.x 项目 |
-| `react` | React 19 + TypeScript 项目 |
+### `review` — 提交前审查
 
-**约束：** 仅使用预定义模板，不调用 LLM。绝不覆盖已有的 CLAUDE.md，而是生成 `.claude/gapfill-suggestions.md` 建议文件。
+**什么时候用：** `git commit` 之前，检查近期改动引入的问题。
 
-### `review` — 提交前全局审查
+```
+gapfill review
+```
 
-**适用场景：** 提交前检查，防止近期改动引入碎片（死引用、副本不一致、残留危险权限等）。
+检查项：副本一致性、死引用、模板中的危险权限、过时的项目名。有错误时退出码为 1。
 
-**怎么说：** "用 gapfill 审查项目" 或 "gapfill review"
+### `scan` — 权限审计
 
-**检查项：**
-- 副本一致性（src/ vs skills/src/）
-- 导入有效性（通过 AST 检测死引用）
-- settings 模板中的危险权限
-- 过期内容（旧项目名、废弃引用）
+**什么时候用：** 审计一个目录下所有项目的 settings.local.json。
 
-**约束：** 只报告，不修改任何文件。
+```
+gapfill scan /path/to/projects
+```
 
-### `scan` — 设置合规扫描
+扫描所有项目的权限配置，标记高危（`Write(/**)`、`Bash(curl:*)`）和低风险（`Bash(find:*)`、`Bash(python:*)`）权限。
 
-**适用场景：** 审计一个目录下所有项目的 settings.local.json 是否有危险权限。
+### `sync` — 权限对比
 
-**怎么说：** "用 gapfill 扫描 /path/to/projects 的权限" 或 "gapfill scan /path/to/projects"
+**什么时候用：** 多个项目的权限规则不一致，想合并统一。
 
-**扫描项：**
-- **高危**: Write(/**), Edit(/**), Bash(curl:*), Bash(wget:*), WebFetch(domain:*)
-- **低风险**: Bash(find:*), Bash(npx:*), Bash(python:*)
+```
+gapfill sync
+```
 
-**约束：** 只报告，不修改任何文件。
-
-### `sync` — 跨项目权限同步
-
-**适用场景：** 你有多个项目，权限规则不一致，想合并一份统一的配置。
-
-**怎么说：** "用 gapfill 同步权限" 或 "gapfill sync"
-
-**约束：** 只报告。建议合并配置，但不自动写入文件。
+展示差异并建议合并配置。只报告，不修改文件。
 
 ## 架构
 
@@ -121,6 +111,11 @@ gapfill init
 ## 开发路线图
 
 请参阅 [ROADMAP_zh.md](ROADMAP_zh.md)。
+
+## 贡献
+
+发现问题？提一个 [issue](https://github.com/russellglobal/gapfill/issues)。
+想贡献代码？Fork 仓库后提交 PR。
 
 ## 许可证
 
