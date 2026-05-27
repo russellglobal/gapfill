@@ -69,23 +69,3 @@ Same input, same output. No randomness, no "AI hallucinations," no irreproducibl
 | Permission management | Click "Allow" on every command | Preset permissions, ~80% fewer confirmations |
 | Pre-commit checks | Based on experience or forgotten | 7 automated checks |
 | Multi-project consistency | Each project configured differently | Unified templates, guaranteed consistency |
-
-## Product Strategy
-
-### We Are Not "Enterprise-Grade" — We Are Irreplaceable
-
-Five expert perspectives converge on one answer: "enterprise-grade" is not gapfill's direction. Not because the problem is unimportant, but because the wedge is wrong.
-
-- **Product Strategy**: The enterprise market for "CLI tool procurement" doesn't exist. The play is to become the default configuration layer for AI-assisted development — the husky/prettier of the Claude Code ecosystem.
-- **Security / Compliance**: Security teams buy demonstrable compliance, not safe defaults. Gapfill's role is the "developer workstation compliance layer" — referenced in AI usage policies, not purchased as a dashboard.
-- **Developer Experience**: The best tools are ruthlessly opinionated about one thing. "Enterprise-grade" would destroy gapfill's rarest qualities: zero tokens, determinism, user sovereignty.
-- **China Market**: "企业级" in the Chinese dev community means "expensive, heavy, hard to use." "溜缝儿" is the differentiator — warm, humble, practical, aligned with the "别整虚的，能跑就行" ethos.
-- **Ecosystem Defense**: Platform absorption risk exists, but the cross-platform governance layer is the moat. Become the ESLint of AI coding tools — not glamorous, but indispensable once a team scales.
-
-### The Path
-
-1. **Deepen developer experience first** — more stack templates (Next.js, FastAPI, Go, Rust), make `gapfill init` the fastest path from `mkdir` to a working AI coding session.
-2. **Abstract to cross-platform** — not bound to Claude Code alone. Support Cursor, Copilot, and others. Become the universal governance layer for AI coding tools.
-3. **Enterprise adoption bottoms-up** — developers install it, managers can't stop it. Not sold as licenses, adopted as baseline infrastructure.
-
-**One sentence: Don't chase enterprise-grade. Chase irreplaceability. When every AI coding user runs gapfill, enterprise-grade arrives on its own.**
