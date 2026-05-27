@@ -168,7 +168,28 @@ def _create_settings(project_path):
     content = _read_template("settings.json")
     claude_dir = project_path / ".claude"
     claude_dir.mkdir(exist_ok=True)
-    _write_file(claude_dir / "settings.local.json", content)
+    settings_path = claude_dir / "settings.local.json"
+
+    if not settings_path.exists():
+        settings_path.write_text(content, encoding="utf-8")
+        print("  settings.local.json")
+        return
+
+    # File exists — ask for confirmation
+    print("[CONFIRM] settings.local.json 已存在，是否用 gapfill 预设模板替换？(yes/no)")
+    if sys.stdin.isatty():
+        try:
+            answer = input().strip().lower()
+            if answer in ("yes", "y"):
+                settings_path.write_text(content, encoding="utf-8")
+                print("  settings.local.json (已替换)")
+            else:
+                print("  已保留现有 settings.local.json")
+        except EOFError:
+            print("  已保留现有 settings.local.json")
+    else:
+        # Non-interactive: default to skip
+        print("  非交互模式，已保留现有 settings.local.json")
 
 
 def _create_env_info(project_path, lang="en"):

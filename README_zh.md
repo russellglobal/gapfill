@@ -151,3 +151,4 @@ Apache 2.0
 ---
 
 术语表请参阅 [docs/glossary.md](docs/glossary.md)。
+项目哲学请参阅 [PHILOSOPHY_zh.md](PHILOSOPHY_zh.md) / [English](PHILOSOPHY.md)。

@@ -152,3 +152,4 @@ Apache 2.0
 
 For Chinese documentation, see [README_zh.md](README_zh.md).
 For terminology glossary, see [docs/glossary.md](docs/glossary.md).
+For project philosophy, see [PHILOSOPHY.md](PHILOSOPHY.md) / [中文版](PHILOSOPHY_zh.md).
