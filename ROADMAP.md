@@ -6,11 +6,11 @@
 
 Project initialization: environment check, git init, scaffold files, permission preset, environment probe, initial commit.
 
-### v2 — stack-claude-md / review / scan
+### v2 — stack-md / review / scan
 
 | Feature | Description |
 |---------|-------------|
-| `stack-claude-md` | Tech-stack-aware CLAUDE.md generation (generic, spring-boot, react) |
+| `stack-md` | Tech-stack-aware CLAUDE.md generation (generic, spring-boot, react) |
 | `review` | Pre-commit project health check (copy consistency, import validity, dangerous permissions, stale content) |
 | `scan` | Settings compliance audit (dangerous permission detection across projects) |
 
