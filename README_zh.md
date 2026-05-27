@@ -5,6 +5,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache_2.0-green.svg)](LICENSE)
 [![零依赖](https://img.shields.io/badge/dependencies-0-lightgrey.svg)]()
+[![零 token](https://img.shields.io/badge/token_消耗-0-purple.svg)]()
 
 [English](README.md) · [中文](README_zh.md)
 
@@ -17,7 +18,7 @@ Claude Code 很强大，但开始一个新项目时：
 - 📄 **从零手写 CLAUDE.md**，找不到模板参考
 - 🔍 **永远不知道**自己的权限里有没有 `Write(/**)` 这种危险规则
 
-Gapfill 用几秒钟解决这四个问题——零 LLM 调用、零依赖，只要 Python。
+Gapfill 用几秒钟解决这四个问题——零 LLM 调用、零依赖，只要 Python。初始化、审查、扫描全过程本地执行，**不消耗任何 token**。
 
 ## 30 秒上手
 
@@ -56,6 +57,7 @@ gapfill init
 gapfill init                           # 基础初始化
 gapfill init ./my-project              # 指定目录初始化
 gapfill init --stack spring-boot       # 初始化 + 一步生成 CLAUDE.md
+gapfill init --stack spring-boot --lang zh  # 初始化 + 中文版 CLAUDE.md
 ```
 
 创建 `.gitignore`、`README.md`、`settings.local.json`、`env-info.txt` 并自动提交。自动检测 git 和 SSH key 状态。
@@ -69,6 +71,7 @@ gapfill init --stack spring-boot       # 初始化 + 一步生成 CLAUDE.md
 gapfill stack-claude-md                        # 通用模板
 gapfill stack-claude-md --stack spring-boot    # Spring Boot 3.x
 gapfill stack-claude-md --stack react          # React 19 + TypeScript
+gapfill stack-claude-md --stack spring-boot --lang zh  # 中文版
 ```
 
 预定义模板——不调用 LLM。绝不覆盖已有的 CLAUDE.md。

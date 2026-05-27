@@ -48,7 +48,12 @@ def init_command(args):
 
     # 4. Generate CLAUDE.md if --stack specified
     if getattr(args, "stack", None):
-        _create_claude_md(project_path, args.stack)
+        lang = getattr(args, "lang", "en")
+        _create_claude_md(project_path, args.stack, lang)
+
+    # 5. Generate env-info.txt
+    lang = getattr(args, "lang", "en")
+    _create_env_info(project_path, lang)
 
     # 5. Initial commit
     print("首次 git commit...")
@@ -161,12 +166,15 @@ def _create_env_info(project_path, lang="en"):
     _write_file(project_path / "env-info.txt", content)
 
 
-def _create_claude_md(project_path, stack):
+def _create_claude_md(project_path, stack, lang="en"):
     """Generate CLAUDE.md from a tech stack template during init."""
-    VALID_STACKS = {"generic", "spring-boot", "react"}
     if stack not in VALID_STACKS:
         print(f"警告: 不支持的技术栈 '{stack}'，跳过 CLAUDE.md 生成")
         return
-    template = _read_template(f"claude-{stack}.md")
+    if lang not in VALID_LANGS:
+        print(f"警告: 不支持的语言 '{lang}'，使用默认英文")
+        lang = "en"
+    template_name = f"claude-{stack}" if lang == "en" else f"claude-{stack}-{lang}"
+    template = _read_template(template_name)
     content = template.replace("{{project_name}}", project_path.name)
     _write_file(project_path / "CLAUDE.md", content)

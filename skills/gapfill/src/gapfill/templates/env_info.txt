@@ -1,8 +1,10 @@
-# 环境信息 - 自动生成，请勿手动修改
-# 生成时间: {{timestamp}}
+# Environment Info - Auto-generated, do not edit manually
+# Generated at: {{timestamp}}
 
-## 操作系统
+## OS
+
 {{os_info}}
 
-## 可用工具
+## Available Tools
+
 {{tools_info}}
