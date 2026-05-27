@@ -8,14 +8,14 @@ from gapfill.utils import fix_windows_encoding
 fix_windows_encoding()
 
 from gapfill.templates import TEMPLATES_DIR
-from gapfill.constants import VALID_STACKS, VALID_LANGS
+
+VALID_STACKS = {"generic", "spring-boot", "react"}
 
 
 def stack_claude_md_command(args):
     """Execute the stack-claude-md subcommand."""
     project_path = Path(args.path).resolve()
     stack = args.stack or "generic"
-    lang = getattr(args, "lang", "en")
 
     if stack not in VALID_STACKS:
         available = ", ".join(sorted(VALID_STACKS))
@@ -23,16 +23,10 @@ def stack_claude_md_command(args):
         print(f"可用技术栈: {available}")
         sys.exit(1)
 
-    if lang not in VALID_LANGS:
-        print(f"错误: 不支持的语言 '{lang}'")
-        print(f"可用语言: en, zh")
-        sys.exit(1)
-
     # Read template
-    template_name = f"claude-{stack}" if lang == "en" else f"claude-{stack}-{lang}"
-    template_file = TEMPLATES_DIR / f"{template_name}.md"
+    template_file = TEMPLATES_DIR / f"claude-{stack}.md"
     if not template_file.exists():
-        print(f"错误: 模板文件不存在: {template_name}.md")
+        print(f"错误: 模板文件不存在: claude-{stack}.md")
         sys.exit(1)
 
     content = template_file.read_text(encoding="utf-8")

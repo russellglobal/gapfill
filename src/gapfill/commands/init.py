@@ -46,7 +46,11 @@ def init_command(args):
     _create_readme(project_path, project_path.name)
     _create_settings(project_path)
 
-    # 4. Initial commit
+    # 4. Generate CLAUDE.md if --stack specified
+    if getattr(args, "stack", None):
+        _create_claude_md(project_path, args.stack)
+
+    # 5. Initial commit
     print("首次 git commit...")
     add_result = run_git(project_path, "add", "-A")
     if add_result.returncode != 0:
@@ -155,3 +159,14 @@ def _create_env_info(project_path, lang="en"):
         .replace("{{tools_info}}", tools_text)
     )
     _write_file(project_path / "env-info.txt", content)
+
+
+def _create_claude_md(project_path, stack):
+    """Generate CLAUDE.md from a tech stack template during init."""
+    VALID_STACKS = {"generic", "spring-boot", "react"}
+    if stack not in VALID_STACKS:
+        print(f"警告: 不支持的技术栈 '{stack}'，跳过 CLAUDE.md 生成")
+        return
+    template = _read_template(f"claude-{stack}.md")
+    content = template.replace("{{project_name}}", project_path.name)
+    _write_file(project_path / "CLAUDE.md", content)
