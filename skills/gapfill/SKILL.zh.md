@@ -51,6 +51,15 @@ python "{SKILL_DIR}/scripts/init.py" ./my-project
 5. 环境探测：记录可用工具和版本
 6. 首次提交（chore: init project by gapfill）
 
+### settings.local.json 确认机制
+
+当 `settings.local.json` 已存在时，脚本会输出：
+```
+[CONFIRM] settings.local.json 已存在，是否用 gapfill 预设模板替换？(yes/no)
+```
+
+**Claude 处理方式**：检测到 `[CONFIRM]` 标记后，向用户确认是否替换。用户确认则输入 `yes`，否则输入 `no`。
+
 ### 执行后
 脚本执行完成后，向用户确认：
 1. 显示创建的文件列表

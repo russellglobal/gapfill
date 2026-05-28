@@ -16,11 +16,22 @@ Project initialization: environment check, git init, scaffold files, permission 
 
 ## Planned
 
-### v3
+### v3 — 多平台适配
 
-_TBD_ — validate review/scan adoption first before committing to a specific feature.
+扩展 gapfill 到 Claude Code 之外的 AI 编码平台（Cursor、Codex CLI、Copilot 等），保持核心 Python 引擎不变，为每个平台添加 adapter。
 
-### v4+
+| Feature | Description |
+|---------|-------------|
+| `adapters/` 架构 | 平台抽象层，`init --platform <name>` 生成对应平台配置 |
+| `cursor` adapter | Cursor 的 `.cursor/rules/` 配置生成 |
+| `codex` adapter | OpenAI Codex CLI 配置生成 |
+| `copilot` adapter | GitHub Copilot 配置生成 |
+| `review` 扩展 | 识别新平台配置文件格式，适配权限审计 |
+| `scan` 扩展 | 扫描多平台配置文件 |
+
+**决策记录**：不使用 skillkit。gapfill 核心是配置治理逻辑（review/scan/sync），不是 skill 文件翻译，自建更合适。
+
+### v4
 
 `publish` (deferred) — Multi-language documentation sync and consistency check. Valuable but not urgent until user base grows internationally.
 

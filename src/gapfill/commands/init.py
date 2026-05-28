@@ -93,6 +93,38 @@ def _has_existing_commits(project_path):
         return False
 
 
+def _do_commit(project_path):
+    """Commit scaffolded files. Auto-commit only for empty repos (no existing commits)."""
+    has_commits = _has_existing_commits(project_path)
+
+    if has_commits:
+        print("已有 git 提交历史，跳过自动 commit")
+        print("请手动执行: git add -A && git commit -m 'chore: init project by gapfill'")
+        return
+
+    print("首次 git commit...")
+    add_result = run_git(project_path, "add", "-A")
+    if add_result.returncode != 0:
+        print(f"git add 失败: {add_result.stderr}")
+        sys.exit(1)
+    commit_result = run_git(project_path, "commit", "-m", "chore: init project by gapfill")
+    if commit_result.returncode != 0:
+        print(f"git commit 失败: {commit_result.stderr}")
+        print("如果文件都已存在，可能无需提交")
+
+
+def _has_existing_commits(project_path):
+    """Check if the git repo has any existing commits."""
+    result = run_git(project_path, "rev-list", "--count", "HEAD")
+    if result.returncode != 0:
+        return False  # fresh repo, no commits yet
+    try:
+        count = int(result.stdout.strip())
+        return count > 0
+    except (ValueError, IndexError):
+        return False
+
+
 def _check_env():
     """Check environment prerequisites."""
     if not detect_git():
@@ -136,7 +168,28 @@ def _create_settings(project_path):
     content = _read_template("settings.json")
     claude_dir = project_path / ".claude"
     claude_dir.mkdir(exist_ok=True)
-    _write_file(claude_dir / "settings.local.json", content)
+    settings_path = claude_dir / "settings.local.json"
+
+    if not settings_path.exists():
+        settings_path.write_text(content, encoding="utf-8")
+        print("  settings.local.json")
+        return
+
+    # File exists — ask for confirmation
+    print("[CONFIRM] settings.local.json 已存在，是否用 gapfill 预设模板替换？(yes/no)")
+    if sys.stdin.isatty():
+        try:
+            answer = input().strip().lower()
+            if answer in ("yes", "y"):
+                settings_path.write_text(content, encoding="utf-8")
+                print("  settings.local.json (已替换)")
+            else:
+                print("  已保留现有 settings.local.json")
+        except EOFError:
+            print("  已保留现有 settings.local.json")
+    else:
+        # Non-interactive: default to skip
+        print("  非交互模式，已保留现有 settings.local.json")
 
 
 def _create_env_info(project_path, lang="en"):
