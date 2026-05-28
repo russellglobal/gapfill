@@ -33,32 +33,31 @@ python "{SKILL_DIR}/scripts/init.py" [path]
 
 ### 参数
 - **path**: 项目路径（可选，默认当前目录）
+- **--lang**: 语言，`en`（默认）、`zh`。**默认生成英文 README，不要主动添加 `--lang zh`，除非用户明确要求中文**
+- **--stack**: 技术栈名称，`generic`（默认）、`spring-boot`、`react`
 
 ### 示例
 ```bash
-# 当前目录初始化
+# 当前目录初始化（英文 README）
 python "{SKILL_DIR}/scripts/init.py" .
 
-# 指定目录
+# 指定目录初始化（英文 README）
 python "{SKILL_DIR}/scripts/init.py" ./my-project
+
+# 用户明确要求中文时
+python "{SKILL_DIR}/scripts/init.py" . --lang zh
 ```
 
 ### 执行流程
 1. 环境检查（git / SSH key）
 2. Git 初始化（如无 .git）
-3. 创建文件：.gitignore、README.md、settings.local.json、env-info.txt
-4. 权限预置：基础级 + 低风险级
+3. 创建文件：.gitignore、README.md、env-info.txt
+4. settings.local.json：不存在则生成，已存在则做加法合并（set union，只加不删）
 5. 环境探测：记录可用工具和版本
 6. 首次提交（chore: init project by gapfill）
 
-### settings.local.json 确认机制
-
-当 `settings.local.json` 已存在时，脚本会输出：
-```
-[CONFIRM] settings.local.json 已存在，是否用 gapfill 预设模板替换？(yes/no)
-```
-
-**Claude 处理方式**：检测到 `[CONFIRM]` 标记后，向用户确认是否替换。用户确认则输入 `yes`，否则输入 `no`。
+### settings.local.json 合并逻辑
+脚本始终执行**集合并集合并**——从不覆盖已有权限。如果 `settings.local.json` 已存在，它会将模板规则与已有规则合并（通过 set union 去重）。输出会显示 `+N 条规则`（如果有新增），或 `已是最新`（如果无需修改）。这是安全且幂等的。
 
 ### 执行后
 脚本执行完成后，向用户确认：
@@ -107,23 +106,24 @@ python "{SKILL_DIR}/scripts/sync.py" /path/to/projects --base my-project
 
 ### 用法
 ```bash
-python "{SKILL_DIR}/scripts/stack_md.py" [path] [--stack 名称]
+python "{SKILL_DIR}/scripts/stack_claude_md.py" [path] [--stack 名称] [--lang zh]
 ```
 
 ### 参数
 - **path**: 项目路径（可选，默认当前目录）
 - **--stack, -s**: 技术栈名称：`generic`（默认）、`spring-boot`、`react`
+- **--lang**: 语言：`en`（默认）、`zh`
 
 ### 示例
 ```bash
 # 在当前目录创建通用 CLAUDE.md
-python "{SKILL_DIR}/scripts/stack_md.py" .
+python "{SKILL_DIR}/scripts/stack_claude_md.py" .
 
 # 为指定项目创建 Spring Boot CLAUDE.md
-python "{SKILL_DIR}/scripts/stack_md.py" ./my-spring-project --stack spring-boot
+python "{SKILL_DIR}/scripts/stack_claude_md.py" ./my-spring-project --stack spring-boot
 
-# 创建 React CLAUDE.md
-python "{SKILL_DIR}/scripts/stack_md.py" ./my-react-app -s react
+# 创建中文版 CLAUDE.md
+python "{SKILL_DIR}/scripts/stack_claude_md.py" ./my-project --lang zh
 ```
 
 ### 执行流程
@@ -131,7 +131,7 @@ python "{SKILL_DIR}/scripts/stack_md.py" ./my-react-app -s react
 2. 加载预定义模板
 3. 替换 `{{project_name}}` 占位符
 4. 如果 `CLAUDE.md` 不存在：创建并写入模板内容
-5. 如果 `CLAUDE.md` 已存在：生成建议到 `.claude/gapfill-suggestions.md`（绝不覆盖）
+5. 如果 `CLAUDE.md` 已存在：生成建议到 `.claude/claude-suggestions.md`（绝不覆盖）
 
 ### 执行后
 脚本执行完成后，告知用户：
@@ -139,7 +139,37 @@ python "{SKILL_DIR}/scripts/stack_md.py" ./my-react-app -s react
 2. 创建文件的行数
 3. 如果生成了建议文件，简要总结核心要点
 
-**重要**：永远不要覆盖用户已有的 CLAUDE.md。已有时必须生成 `.claude/gapfill-suggestions.md`。
+**重要**：永远不要覆盖用户已有的 CLAUDE.md。已有时必须生成 `.claude/claude-suggestions.md`。
+
+## scan 子命令
+
+### 用法
+```bash
+python "{SKILL_DIR}/scripts/scan.py" [path]
+```
+
+### 参数
+- **path**: 扫描目录（可选，默认当前目录）
+
+### 示例
+```bash
+# 扫描当前目录下的项目
+python "{SKILL_DIR}/scripts/scan.py" .
+
+# 扫描指定目录
+python "{SKILL_DIR}/scripts/scan.py" /path/to/projects
+```
+
+### 执行流程
+1. 扫描目录树，查找包含 `.claude/settings.local.json` 的项目
+2. 根据权限将项目分类为：通过/低风险/高风险
+3. 打印项目摘要
+
+### 执行后
+脚本执行完成后：
+1. 展示项目摘要（✓/⚠️/❌ 图标）
+2. 如有高风险项目，重点标出
+3. scan 是只读的，不会修改任何文件
 
 ## review 子命令
 

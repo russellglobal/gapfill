@@ -23,6 +23,7 @@ from gapfill.constants import VALID_STACKS, VALID_LANGS
 def init_command(args):
     """Execute the init subcommand."""
     project_path = Path(args.path).resolve()
+    lang = getattr(args, "lang", "en")
 
     # 1. Environment check
     print("检查环境...")
@@ -43,16 +44,14 @@ def init_command(args):
     # 3. Scaffold files
     print("创建项目文件...")
     _create_gitignore(project_path)
-    _create_readme(project_path, project_path.name)
+    _create_readme(project_path, project_path.name, lang)
     _create_settings(project_path)
 
     # 4. Generate CLAUDE.md if --stack specified
     if getattr(args, "stack", None):
-        lang = getattr(args, "lang", "en")
         _create_claude_md(project_path, args.stack, lang)
 
     # 5. Generate env-info.txt
-    lang = getattr(args, "lang", "en")
     _create_env_info(project_path, lang)
 
     # 6. Initial commit (only for empty repos)
@@ -127,37 +126,41 @@ def _create_gitignore(project_path):
     _write_file(project_path / ".gitignore", content)
 
 
-def _create_readme(project_path, project_name):
-    content = _read_template("readme.md").replace("{{project_name}}", project_name)
+def _create_readme(project_path, project_name, lang="en"):
+    template = "readme_zh.md" if lang == "zh" else "readme.md"
+    content = _read_template(template).replace("{{project_name}}", project_name)
     _write_file(project_path / "README.md", content)
 
 
 def _create_settings(project_path):
+    import json
+
     content = _read_template("settings.json")
+    template_data = json.loads(content)
+    template_rules = set(template_data.get("permissions", {}).get("allow", []))
+
     claude_dir = project_path / ".claude"
     claude_dir.mkdir(exist_ok=True)
     settings_path = claude_dir / "settings.local.json"
 
     if not settings_path.exists():
         settings_path.write_text(content, encoding="utf-8")
-        print("  settings.local.json")
+        print(f"  settings.local.json ({len(template_rules)} 条规则)")
         return
 
-    # File exists — ask for confirmation
-    print("[CONFIRM] settings.local.json 已存在，是否用 gapfill 预设模板替换？(yes/no)")
-    if sys.stdin.isatty():
-        try:
-            answer = input().strip().lower()
-            if answer in ("yes", "y"):
-                settings_path.write_text(content, encoding="utf-8")
-                print("  settings.local.json (已替换)")
-            else:
-                print("  已保留现有 settings.local.json")
-        except EOFError:
-            print("  已保留现有 settings.local.json")
+    # File exists — merge with template (union, deduplicate)
+    existing_data = json.loads(settings_path.read_text(encoding="utf-8"))
+    existing_rules = set(existing_data.get("permissions", {}).get("allow", []))
+
+    merged_rules = existing_rules | template_rules
+    new_count = len(merged_rules) - len(existing_rules)
+
+    if new_count > 0:
+        existing_data["permissions"]["allow"] = sorted(merged_rules)
+        settings_path.write_text(json.dumps(existing_data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"  settings.local.json (+{new_count} 条规则，共 {len(merged_rules)} 条)")
     else:
-        # Non-interactive: default to skip
-        print("  非交互模式，已保留现有 settings.local.json")
+        print(f"  settings.local.json 已是最新 ({len(existing_rules)} 条规则)")
 
 
 def _create_env_info(project_path, lang="en"):

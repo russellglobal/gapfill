@@ -44,7 +44,7 @@ def stack_claude_md_command(args):
         # Generate suggestion file instead
         claude_dir = project_path / ".claude"
         claude_dir.mkdir(exist_ok=True)
-        suggestion_file = claude_dir / "gapfill-suggestions.md"
+        suggestion_file = claude_dir / "claude-suggestions.md"
         suggestion_file.write_text(content, encoding="utf-8")
         print(f"CLAUDE.md 已存在，建议内容已写入 {suggestion_file}")
     else:

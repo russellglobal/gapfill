@@ -21,6 +21,8 @@ def main():
         description="AI developer's universal toolkit - Project initialization",
     )
     parser.add_argument("path", nargs="?", default=".", help="Project directory (default: current directory)")
+    parser.add_argument("--lang", default="en", help="Language: en (default), zh")
+    parser.add_argument("--stack", default=None, help="Tech stack: generic, spring-boot, react")
 
     args = parser.parse_args()
     init_command(args)

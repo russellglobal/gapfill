@@ -28,19 +28,24 @@ Invoke this skill when the user mentions gapfill:
 
 ### Usage
 ```bash
-python "{SKILL_DIR}/scripts/init.py" [path]
+python "{SKILL_DIR}/scripts/init.py" [path] [--lang zh] [--stack name]
 ```
 
 ### Arguments
 - **path**: Project directory path (optional, defaults to current directory)
+- **--lang**: Language for generated files: `en` (default), `zh`
+- **--stack**: Tech stack for CLAUDE.md: `generic`, `spring-boot`, `react`
 
 ### Examples
 ```bash
-# Initialize in current directory
+# Initialize in current directory (English README)
 python "{SKILL_DIR}/scripts/init.py" .
 
-# Initialize in a specific directory
-python "{SKILL_DIR}/scripts/init.py" ./my-project
+# Initialize with Chinese README
+python "{SKILL_DIR}/scripts/init.py" . --lang zh
+
+# Initialize with Spring Boot CLAUDE.md and Chinese README
+python "{SKILL_DIR}/scripts/init.py" ./my-project --stack spring-boot --lang zh
 ```
 
 ### Execution Flow
@@ -50,6 +55,9 @@ python "{SKILL_DIR}/scripts/init.py" ./my-project
 4. Permission preset: basic + low-risk levels
 5. Environment probe: record available tools and versions
 6. Initial commit (chore: init project by gapfill)
+
+### settings.local.json Handling
+The script always performs a **union merge** — it never overwrites existing permissions. If `settings.local.json` already exists, it merges the template rules with the existing ones (deduplicating via set union). The output will show `+N 条规则` if new rules were added, or `已是最新` if no changes were needed. This is safe and idempotent.
 
 ### After Execution
 After the script completes, confirm with the user:
@@ -98,23 +106,24 @@ After the script completes:
 
 ### Usage
 ```bash
-python "{SKILL_DIR}/scripts/stack_md.py" [path] [--stack name]
+python "{SKILL_DIR}/scripts/stack_claude_md.py" [path] [--stack name] [--lang zh]
 ```
 
 ### Arguments
 - **path**: Project directory (optional, defaults to current directory)
 - **--stack, -s**: Tech stack name: `generic` (default), `spring-boot`, `react`
+- **--lang**: Language: `en` (default), `zh`
 
 ### Examples
 ```bash
 # Create generic CLAUDE.md in current directory
-python "{SKILL_DIR}/scripts/stack_md.py" .
+python "{SKILL_DIR}/scripts/stack_claude_md.py" .
 
 # Create Spring Boot CLAUDE.md for a specific project
-python "{SKILL_DIR}/scripts/stack_md.py" ./my-spring-project --stack spring-boot
+python "{SKILL_DIR}/scripts/stack_claude_md.py" ./my-spring-project --stack spring-boot
 
-# Create React CLAUDE.md
-python "{SKILL_DIR}/scripts/stack_md.py" ./my-react-app -s react
+# Create React CLAUDE.md with Chinese README
+python "{SKILL_DIR}/scripts/stack_claude_md.py" ./my-react-app -s react --lang zh
 ```
 
 ### Execution Flow
@@ -122,7 +131,7 @@ python "{SKILL_DIR}/scripts/stack_md.py" ./my-react-app -s react
 2. Load pre-defined template
 3. Replace `{{project_name}}` placeholder
 4. If `CLAUDE.md` does not exist: create it with template content
-5. If `CLAUDE.md` already exists: write suggestions to `.claude/gapfill-suggestions.md` (never overwrite)
+5. If `CLAUDE.md` already exists: write suggestions to `.claude/claude-suggestions.md` (never overwrite)
 
 ### After Execution
 After the script completes, tell the user:
@@ -130,7 +139,37 @@ After the script completes, tell the user:
 2. The line count of the created file
 3. If suggestions were generated, briefly summarize the key points
 
-**Important**: Never overwrite an existing CLAUDE.md. Always generate `.claude/gapfill-suggestions.md` instead.
+**Important**: Never overwrite an existing CLAUDE.md. Always generate `.claude/claude-suggestions.md` instead.
+
+## scan Subcommand
+
+### Usage
+```bash
+python "{SKILL_DIR}/scripts/scan.py" [path]
+```
+
+### Arguments
+- **path**: Directory to scan for projects (optional, defaults to current directory)
+
+### Examples
+```bash
+# Scan current directory for projects
+python "{SKILL_DIR}/scripts/scan.py" .
+
+# Scan a specific directory
+python "{SKILL_DIR}/scripts/scan.py" /path/to/projects
+```
+
+### Execution Flow
+1. Scan directory tree for projects with `.claude/settings.local.json`
+2. Classify each project as clean, low-risk, or high-risk based on permissions
+3. Print summary with icons for each project
+
+### After Execution
+After the script completes:
+1. Show the project summary with pass/warning/fail icons
+2. If any project has high-risk permissions, highlight them
+3. No file modifications — scan is read-only
 
 ## review Subcommand
 
