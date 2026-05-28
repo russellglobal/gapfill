@@ -16,6 +16,8 @@ AI 开发者的通用工具箱。
 - 所有文档、注释、commit message 使用中文
 
 ### 分支工作流
-- `main` 是受保护分支，不允许直接 push
+
+- 本地主分支是 `russell_main`，远程禁止直接 push 到 `main`
 - 所有新功能在 `feature/<功能名>` 分支上开发
 - 测试通过后合并到 `main`，通过 Pull Request 推送
+- 不要直接修改 `main` 分支
