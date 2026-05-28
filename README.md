@@ -29,9 +29,9 @@ git clone https://github.com/russellglobal/gapfill.git
 # 2. Install skill
 cp -r gapfill/skills/gapfill ~/.claude/skills/gapfill
 
-# 3. Use it
+# 3. Use it — open your project in Claude Code and type:
 cd your-project
-gapfill init
+# Then in Claude Code, type: gapfill init
 ```
 
 Requires **Python 3.8+** and **git**. That's it.
@@ -42,7 +42,7 @@ Requires **Python 3.8+** and **git**. That's it.
 |--------|-------|
 | Run `git init` manually | `gapfill init` sets up repo, config, and auto-commits for empty repos (or skips for existing projects) |
 | Manually click "Allow" for every command | Pre-configured permissions reduce confirmations by ~80% |
-| Copy `settings.local.json` from old projects | One `gapfill init` creates safe defaults |
+| Copy `settings.local.json` from old projects | `gapfill init` merges permission rules (set union, never deletes existing) |
 | Write CLAUDE.md from scratch | `gapfill init --stack spring-boot` creates it during init, or `gapfill stack-claude-md` for existing projects |
 | Commit without checking for issues | `gapfill review` runs 7 pre-commit checks in seconds |
 | Manually audit 10 projects for dangerous permissions | `gapfill scan` audits all projects in seconds |
@@ -60,7 +60,8 @@ gapfill init --stack spring-boot       # init + CLAUDE.md in one step
 gapfill init --stack spring-boot --lang zh  # init + Chinese CLAUDE.md
 ```
 
-Creates `.gitignore`, `README.md`, `settings.local.json`, `env-info.txt`.
+Creates `.gitignore`, `README.md`, `env-info.txt`.
+Generates `settings.local.json` if missing; merges template rules if it already exists (set union, never deletes existing rules).
 Auto-detects git and SSH key status.
 With `--stack`, also generates a tech-stack-specific CLAUDE.md.
 
@@ -91,13 +92,13 @@ Runs 7 checks (zero tokens consumed):
 
 | Check | What it catches |
 |-------|-----------------|
-| 副本一致性 | Files out of sync between src/ and skills/src/ |
-| 死引用 | Import from a module that doesn't exist |
-| 危险权限 | `Write(/**)`, `Bash(curl:*)` in settings template |
-| 过期内容 | Stale project names left in code |
-| JSON 语法 | Broken JSON in any *.json file |
-| 脚本语法 | Syntax errors in scripts/*.py |
-| 敏感文件忽略 | .gitignore missing common secret filenames |
+| Copy consistency | Files out of sync between src/ and skills/src/ |
+| Dead imports | Import from a module that doesn't exist |
+| Dangerous permissions | `Write(/**)`, `Bash(curl:*)` in settings template |
+| Stale content | Stale project names left in code |
+| JSON syntax | Broken JSON in any *.json file |
+| Script syntax | Syntax errors in scripts/*.py |
+| Sensitive files | .gitignore missing common secret filenames |
 
 Exits with code 1 if errors found.
 

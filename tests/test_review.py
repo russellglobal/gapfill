@@ -23,7 +23,6 @@ def run_review(tmp_path, args=None):
     stderr = io.TextIOWrapper(io.BytesIO(err), encoding="utf-8", errors="replace").read()
     proc.stdout_data = stdout
     proc.stderr_data = stderr
-    proc.returncode
     return proc
 
 

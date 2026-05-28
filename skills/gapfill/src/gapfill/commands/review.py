@@ -39,13 +39,6 @@ SENSITIVE_FILE_PATTERNS = [
     "*.id_rsa", "*.id_ed25519",
 ]
 
-ALL_CHECKS = [
-    "副本一致性", "死引用", "危险权限",
-    "过期内容", "JSON 语法", "脚本语法",
-    "敏感文件忽略",
-]
-
-
 @dataclass
 class Issue:
     severity: str  # "error" or "warning"
@@ -152,18 +145,20 @@ def check_copy_consistency(project_path):
 def check_imports(project_path):
     """Check that all local imports in gapfill resolve to existing files."""
     issues = []
-    src_dir = project_path / "src" / "gapfill"
+    src_root = project_path / "src"
+    src_dir = src_root / "gapfill"
 
     if not src_dir.exists():
         return issues, 0
 
+    # Build set of available modules relative to src/ root
     available = set()
-    for f in src_dir.rglob("*.py"):
+    for f in src_root.rglob("*.py"):
         if f.name == "__init__.py":
-            mod_path = f.relative_to(src_dir.parent).parent
+            mod_path = f.relative_to(src_root).parent
             available.add(str(mod_path).replace("/", "."))
         else:
-            mod_path = f.relative_to(src_dir.parent).with_suffix("")
+            mod_path = f.relative_to(src_root).with_suffix("")
             available.add(str(mod_path).replace("/", "."))
 
     file_count = 0
@@ -178,22 +173,18 @@ def check_imports(project_path):
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
-                if node.level and node.module and node.module.startswith("gapfill"):
-                    found = False
-                    for candidate in [
-                        src_dir / f"{node.module.replace('.', '/')}.py",
-                        src_dir / f"{node.module.replace('.', '/')}" / "__init__.py",
-                    ]:
-                        if candidate.exists():
-                            found = True
-                            break
-                    if not found:
-                        rel_file = py_file.relative_to(src_dir)
-                        issues.append(Issue(
-                            "warning",
-                            "死引用",
-                            f"{rel_file}: 从 '{node.module}' 导入，但模块不存在"
-                        ))
+                if node.module and node.module.startswith("gapfill"):
+                    mod_path = node.module.replace(".", "/")
+                    candidate1 = src_root / f"{mod_path}.py"
+                    candidate2 = src_root / mod_path / "__init__.py"
+                    if candidate1.exists() or candidate2.exists():
+                        continue
+                    rel_file = py_file.relative_to(src_dir)
+                    issues.append(Issue(
+                        "warning",
+                        "死引用",
+                        f"{rel_file}: 从 '{node.module}' 导入，但模块不存在"
+                    ))
 
     return issues, file_count
 
@@ -230,10 +221,13 @@ def check_stale_content(project_path):
     if not src_dir.exists():
         return issues
 
+    # Skip files that define STALE_PATTERNS constants to avoid false positives
+    skip_files = {"review.py"}
+
     for py_file in sorted(src_dir.rglob("*.py")):
         if py_file.parent.name == "__pycache__":
             continue
-        if py_file.name == "review.py":
+        if py_file.name in skip_files:
             continue
         try:
             content = py_file.read_text(encoding="utf-8")

@@ -1,24 +1,24 @@
 # {{project_name}}
 
-<!-- 一句话说明这个项目做什么。例如：用 Python 管理 Claude Code 权限配置 -->
+<!-- One-line description of what this project does. Example: Manage Claude Code permission configurations with Python -->
 
-## 快速开始
+## Quick Start
 
-<!-- 新用户 / 新协作者如何在 3 步内跑起来？例如：
-1. 安装依赖
-2. 配置环境变量
-3. 运行入口命令
+<!-- How can a new user / collaborator get started in 3 steps? Example:
+1. Install dependencies
+2. Configure environment variables
+3. Run the entry command
 -->
 
-## 开发
+## Development
 
-<!-- 协作者需要知道的内容：
-- 如何运行测试
-- 代码风格要求
-- 提交规范（如 commit message 格式）
-- 分支策略
+<!-- What collaborators need to know:
+- How to run tests
+- Code style requirements
+- Commit conventions
+- Branching strategy
 -->
 
-## 许可证
+## License
 
-<!-- 例如：Apache 2.0、MIT 等 -->
+<!-- Example: Apache 2.0, MIT, etc. -->

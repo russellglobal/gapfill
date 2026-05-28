@@ -29,9 +29,9 @@ git clone https://github.com/russellglobal/gapfill.git
 # 2. 安装 skill
 cp -r gapfill/skills/gapfill ~/.claude/skills/gapfill
 
-# 3. 使用
+# 3. 使用 — 在 Claude Code 中打开项目目录后输入：
 cd your-project
-gapfill init
+# 然后在 Claude Code 中输入：gapfill init
 ```
 
 需要 **Python 3.8+** 和 **git**。就这些。
@@ -42,7 +42,7 @@ gapfill init
 |---------|-----------|
 | 手动 `git init` | `gapfill init` 一次完成仓库初始化、配置，空仓库自动提交 |
 | 每个命令都要点"允许" | 预置权限，确认次数减少约 80% |
-| 从旧项目拷 `settings.local.json` | `gapfill init` 一键生成安全默认值 |
+| 从旧项目拷 `settings.local.json` | `gapfill init` 自动合并权限配置，只加不删 |
 | 从零写 CLAUDE.md | `gapfill init --stack spring-boot` 初始化时一步到位，或已有项目用 `gapfill stack-claude-md` |
 | 提交前不检查 | `gapfill review` 7 项预提交检查，几秒跑完 |
 | 手动审计 10 个项目的权限 | `gapfill scan` 几秒钟扫完 |
@@ -60,7 +60,8 @@ gapfill init --stack spring-boot       # 初始化 + 一步生成 CLAUDE.md
 gapfill init --stack spring-boot --lang zh  # 初始化 + 中文版 CLAUDE.md
 ```
 
-创建 `.gitignore`、`README.md`、`settings.local.json`、`env-info.txt`。
+创建 `.gitignore`、`README.md`、`env-info.txt`。
+`settings.local.json` 如果不存在则生成，已存在则自动合并模板规则（set union，只加不删）。
 自动检测 git 和 SSH key 状态。
 加上 `--stack` 还会生成技术栈专属 CLAUDE.md。
 

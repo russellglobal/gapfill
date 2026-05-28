@@ -52,14 +52,14 @@ class TestStackMdCommand:
         assert "Anti-Patterns" in content
 
     def test_existing_claude_md_generates_suggestion(self, tmp_path):
-        """Test that existing CLAUDE.md generates gapfill-suggestions.md."""
+        """Test that existing CLAUDE.md generates claude-suggestions.md."""
         # Create existing CLAUDE.md
         (tmp_path / "CLAUDE.md").write_text("# Existing\n", encoding="utf-8")
         result = run_stack_claude_md(tmp_path, ["--stack", "spring-boot"])
         assert result.returncode == 0
         assert (tmp_path / "CLAUDE.md").read_text(encoding="utf-8") == "# Existing\n"
-        assert (tmp_path / ".claude" / "gapfill-suggestions.md").exists()
-        suggestion = (tmp_path / ".claude" / "gapfill-suggestions.md").read_text(encoding="utf-8")
+        assert (tmp_path / ".claude" / "claude-suggestions.md").exists()
+        suggestion = (tmp_path / ".claude" / "claude-suggestions.md").read_text(encoding="utf-8")
         assert "Spring Boot" in suggestion
 
     def test_invalid_stack_returns_error(self, tmp_path):
@@ -88,3 +88,10 @@ class TestStackMdCommand:
             # or placeholder values like "sk-xxx", "AKIA...", "ghp_..."
             assert not re.search(r'(?:password|token|api_key|secret)\s*[:=]\s*["\'][^"\']', content, re.IGNORECASE)
             assert not re.search(r'(?:sk-[a-zA-Z0-9]|AKIA|ghp_|xox[bposr]-)', content)
+
+    def test_chinese_lang(self, tmp_path):
+        """Test that --lang zh generates Chinese CLAUDE.md."""
+        result = run_stack_claude_md(tmp_path, ["--stack", "generic", "--lang", "zh"])
+        assert result.returncode == 0
+        content = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
+        assert "开发原则" in content or "溜缝儿" in content

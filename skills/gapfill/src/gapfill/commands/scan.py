@@ -1,6 +1,5 @@
 """scan subcommand - Scan projects for dangerous permissions in settings."""
 
-import json
 import sys
 from pathlib import Path
 

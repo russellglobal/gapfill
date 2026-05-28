@@ -21,6 +21,7 @@ def main():
         description="溜缝儿 - 生成技术栈专属 CLAUDE.md",
     )
     parser.add_argument("--stack", "-s", default=None, help="技术栈名称 (generic/spring-boot/react)")
+    parser.add_argument("--lang", default="en", help="语言 (en/zh)")
     parser.add_argument("path", nargs="?", default=".", help="项目路径（默认当前目录）")
 
     args = parser.parse_args()
